@@ -18,7 +18,7 @@ async function startHost(){
     const room=makeRoom();$('roomCode').textContent=room;
     peer=new Peer('ecranlive-'+room.toLowerCase(),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
     peer.on('open',()=>setStatus('En attente de ta copine',true));
-    peer.on('call',incoming=>{call=incoming;incoming.answer(localStream);tuneVideoSender(incoming);startStats(incoming,'outbound-rtp');incoming.on('close',()=>{stopStats();setStatus('Connexion interrompue')});setStatus('Connecté — partage en direct',true)});
+    peer.on('call',incoming=>{call=incoming;incoming.answer(localStream,{sdpTransform:preferH264InSdp});tuneVideoSender(incoming);startStats(incoming,'outbound-rtp');incoming.on('close',()=>{stopStats();setStatus('Connexion interrompue')});setStatus('Connecté — partage en direct',true)});
     peer.on('error',err=>{setStatus('Erreur de connexion');$('hint').textContent='Erreur : '+err.type+'. Essaie de recharger la page et de relancer le partage.'});
     if(!localStream.getAudioTracks().length)$('hint').textContent='L’écran est partagé, mais le navigateur n’a pas fourni de piste audio. Arrête et réessaie en activant le partage audio dans la fenêtre de sélection.';
     localStream.getVideoTracks()[0].addEventListener('ended',stopSession);
@@ -30,8 +30,19 @@ function startViewer(room){
   if(!window.Peer){alert('Connexion au service de signalisation impossible. Recharge la page.');return}
   mode='viewer';showSession();$('shareInfo').classList.add('hidden');setStatus('Connexion au partage…');$('hint').textContent='Le son du partage est activé avec les commandes du lecteur.';
   peer=new Peer({config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
-  peer.on('open',()=>{const offerTracks=createOfferTracks();call=peer.call('ecranlive-'+room,offerTracks);if(!call){setStatus('Partage introuvable');return}call.on('stream',stream=>{video.srcObject=stream;video.muted=false;placeholder.classList.add('hidden');video.play().catch(()=>{});startStats(call,'inbound-rtp');setStatus('En direct',true)});call.on('close',()=>{stopStats();setStatus('Le partage est terminé');placeholder.classList.remove('hidden')});call.on('error',()=>setStatus('Connexion interrompue'))});
+  peer.on('open',()=>{const offerTracks=createOfferTracks();call=peer.call('ecranlive-'+room,offerTracks,{sdpTransform:preferH264InSdp});if(!call){setStatus('Partage introuvable');return}call.on('stream',stream=>{video.srcObject=stream;video.muted=false;placeholder.classList.add('hidden');video.play().catch(()=>{});startStats(call,'inbound-rtp');setStatus('En direct',true)});call.on('close',()=>{stopStats();setStatus('Le partage est terminé');placeholder.classList.remove('hidden')});call.on('error',()=>setStatus('Connexion interrompue'))});
   peer.on('error',err=>{setStatus('Partage introuvable');$('hint').textContent='Vérifie que le partage est encore actif et que le code est correct ('+err.type+').'});
+}
+function preferH264InSdp(sdp){
+  return sdp.split(/\r?\n/).map(line=>{
+    if(!line.startsWith('m=video '))return line;
+    const fields=line.trim().split(/\s+/),payloads=fields.slice(3);
+    const h264=payloads.filter(pt=>new RegExp(`^a=rtpmap:${pt}\\s+H264/90000\\s*$`,'im').test(sdp));
+    if(!h264.length)return line;
+    const h264Rtx=payloads.filter(pt=>new RegExp(`^a=fmtp:${pt}\\s+.*\\bapt=(?:${h264.join('|')})\\b`,'im').test(sdp));
+    const ordered=[...h264,...h264Rtx,...payloads.filter(pt=>!h264.includes(pt)&&!h264Rtx.includes(pt))];
+    return [...fields.slice(0,3),...ordered].join(' ');
+  }).join('\r\n');
 }
 function createOfferTracks(){
   // PeerJS needs audio and video m-lines in the initial offer to receive both tracks.
@@ -80,9 +91,11 @@ function startStats(mediaCall,direction){
       const fps=row.framesPerSecond?` · ${Math.round(row.framesPerSecond)} i/s`:'';
       const sourceFps=mode==='host'?localStream?.getVideoTracks?.()[0]?.getSettings?.().frameRate:null;
       const sourceInfo=sourceFps?` · capture ${Math.round(sourceFps)} i/s`:'';
+      const codec=report.get(row.codecId)?.mimeType?.replace(/^video\//,'');
+      const codecInfo=codec?` · codec ${codec}`:'';
       const mbps=rate?` · ${(rate/1_000_000).toFixed(1)} Mb/s`:'';
       const limitation=row.qualityLimitationReason&&row.qualityLimitationReason!=='none'?` · limité par ${row.qualityLimitationReason==='bandwidth'?'le réseau':'le PC'}`:'';
-      $('quality').textContent=`Vidéo ${size}${fps}${sourceInfo}${mbps}${limitation}`;
+      $('quality').textContent=`Vidéo ${size}${fps}${sourceInfo}${codecInfo}${mbps}${limitation}`;
       $('quality').classList.toggle('low',rate>0&&rate<1_500_000);
     }catch(error){console.debug('Video stats unavailable',error)}
   },1000);
