@@ -48,7 +48,7 @@ body:before{background-image:radial-gradient(rgba(169,198,238,.22) .55px,transpa
 .join-entry button{background:#ed344a;color:white}
 .join-entry button:hover{background:#ff5064}
 .projection-video{left:33.7%;top:30.5%;width:32.6%;height:24.8%;object-fit:cover;box-shadow:0 0 0 2px rgba(3,5,9,.9),0 0 24px rgba(0,0,0,.8)}
-@media(max-width:720px){.projection-video{left:20.5%;top:30.5%;width:59%;height:24.8%}}
+@media(max-width:720px){.projection-video{left:18%;top:30.5%;width:64%;height:24.8%}}
 .stop{background:rgba(12,19,30,.92);border-color:rgba(108,145,197,.34);color:#dfe9f7}
 .shareinfo{background:linear-gradient(110deg,#101a29,#0a111b);border-color:rgba(108,145,197,.3)}
 .shareinfo small{color:#a9bdd9}
