@@ -28,7 +28,7 @@ Ne publie jamais de clé API, de mot de passe ou d'identifiant privé dans le d�
 3. Envoie le lien affiché à ta copine ; elle l’ouvre sur son Mac et le flux se connecte automatiquement.
 4. Elle peut activer le son dans les commandes vidéo du navigateur. « Arrêter » coupe les pistes capturées.
 
-Utiliser Chrome ou Edge à jour sur le PC. Le profil fluide demande jusqu’à 1080p, 60 images/s et autorise un plafond vidéo de 50 Mb/s. La fluidité est prioritaire ; si le débit manque, le navigateur peut réduire la résolution. Le plafond n’est pas une promesse de débit : WebRTC adapte l’envoi à la capacité réelle du PC et du réseau, en particulier au débit montant du PC. Pendant le partage, l’indicateur affiche la résolution, la cadence et le débit vidéo observés. La capture audio système dépend du navigateur et du choix de source ; les navigateurs ne garantissent pas tous sa disponibilité. Le site n’active pas le micro.
+Utiliser Chrome ou Edge à jour sur le PC. Le profil fluide demande jusqu'à 1080p, 60 images/s et autorise un plafond vidéo de 50 Mb/s. La capture vidéo privilégie aussi la fluidité pour les contenus en mouvement. Ces réglages sont des préférences, pas une garantie de cadence ou de débit : la source capturée, le navigateur, l’encodage, le Mac et le trajet réseau peuvent limiter le résultat. WebRTC adapte l’envoi à la capacité réelle du PC et du réseau. Pendant le partage, l’indicateur affiche la résolution, la cadence et le débit vidéo observés. La capture audio système dépend du navigateur et du choix de source ; les navigateurs ne garantissent pas tous sa disponibilité. Le site n’active pas le micro.
 
 ## Réseau et confidentialité
 

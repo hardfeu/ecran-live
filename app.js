@@ -9,6 +9,9 @@ async function startHost(){
   mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Profil fluide : jusqu’à 1080p, 60 images/s et un plafond de 50 Mb/s. La fluidité est prioritaire ; si le débit manque, la résolution peut baisser. Choisis « Écran entier » et active le partage audio.';setStatus('Préparation du partage…');
   try{
     localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include'});
+    // Favor frame rate for movies and other moving content. This is a browser hint, not a guarantee.
+    const capturedVideo=localStream.getVideoTracks()[0];
+    if(capturedVideo&&'contentHint'in capturedVideo)capturedVideo.contentHint='motion';
     video.srcObject=localStream;video.muted=true;placeholder.classList.add('hidden');
     const room=makeRoom();$('roomCode').textContent=room;
     peer=new Peer('ecranlive-'+room.toLowerCase(),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
