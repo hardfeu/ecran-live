@@ -66,9 +66,12 @@ function renderWindows(sources) {
 
 async function selectWindow(source) {
   try {
-    await window.cinelive.selectVlcWindow(source.id);
+    const result = await window.cinelive.selectVlcWindow(source.id);
     selectedWindowId = source.id;
     startButton.disabled = false;
+    $('captureNote').textContent = result.maximized
+      ? 'VLC a été agrandi automatiquement pour améliorer la résolution. Garde-le ouvert pendant la séance.'
+      : 'VLC est sélectionné. Agrandis sa fenêtre manuellement avant de lancer si la capture reste petite.';
     renderWindows(await window.cinelive.listVlcWindows());
   } catch (error) {
     selectedWindowId = null;
@@ -123,6 +126,12 @@ function startQuality(call) {
       const fps = row.framesPerSecond ? ` · ${Math.round(row.framesPerSecond)} i/s` : '';
       const mbps = bitrate > 0 ? ` · ${(bitrate / 1_000_000).toFixed(1)} Mb/s` : '';
       $('quality').textContent = `VLC ${dimensions}${fps}${mbps}`;
+      if (row.frameWidth && row.frameHeight && (row.frameWidth < 1280 || row.frameHeight < 720)) {
+        $('sessionHint').textContent = `Capture basse résolution (${dimensions}). Arrête la séance, agrandis VLC ou choisis sa fenêtre vidéo principale, puis relance.`;
+        $('sessionHint').classList.add('quality-warning');
+      } else {
+        $('sessionHint').classList.remove('quality-warning');
+      }
     } catch (error) { console.debug('Mesure du flux indisponible', error); }
   }, 1000);
 }
