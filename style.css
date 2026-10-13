@@ -28,3 +28,32 @@
 .room-scene.is-projecting .projection-video{display:block}
 body.in-session .home-controls{display:none}
 @media(max-width:720px){.home-controls{grid-template-columns:1fr;gap:9px;margin-bottom:13px}.share-button,.join-control{min-height:60px;padding:10px 13px}.join-control{grid-template-columns:1fr auto;align-items:center;gap:10px}.join-control label{font-size:7px}.join-entry{min-width:0}.join-entry input{padding:8px}.room-scene{height:clamp(330px,94vw,430px);aspect-ratio:auto}.projection-video{left:20.5%;top:14.5%;width:59%;height:25%}}
+
+/* A palette inspired by the red-and-blue theatre backdrop. */
+:root{--bg:#070a10;--panel:#111823;--muted:#9aa8bb;--white:#f1f4fa;--gold:#ed344a;--gold-bright:#ffdfe4;--wine:#651c2a;--line:rgba(142,169,207,.2)}
+body{background:radial-gradient(ellipse at 50% 62%,rgba(23,65,111,.22),transparent 50%),radial-gradient(ellipse at 12% 34%,rgba(171,26,44,.17),transparent 40%),linear-gradient(145deg,#070a10,#0d1420 58%,#070a10)}
+body:before{background-image:radial-gradient(rgba(169,198,238,.22) .55px,transparent .65px)}
+.secure{color:#c0cede}
+.secure i{background:#79c8ff;box-shadow:0 0 12px rgba(121,200,255,.7)}
+.brand-mark{box-shadow:0 0 22px rgba(237,52,74,.2)}
+.room-scene{aspect-ratio:16/9;border-color:rgba(103,143,198,.34);background:#05080d;box-shadow:0 24px 76px rgba(0,0,0,.58),0 0 42px rgba(36,91,158,.12)}
+.share-button,.join-control{border-color:rgba(108,145,197,.32);background:linear-gradient(120deg,rgba(17,27,42,.97),rgba(9,14,23,.97));box-shadow:0 12px 32px rgba(0,0,0,.32)}
+.share-button{border-color:rgba(237,52,74,.68);background:linear-gradient(130deg,#ef4356,#b21f36);color:#fff;box-shadow:0 10px 28px rgba(126,20,37,.28)}
+.share-button:hover{filter:brightness(1.12);box-shadow:0 12px 34px rgba(181,29,51,.38)}
+.share-button .tv-play{background:rgba(13,15,22,.22)}
+.join-control label{color:#b5c6df}
+.join-entry input{border-color:rgba(113,157,216,.32);background:#080d15;color:#e8f1ff}
+.join-entry input::placeholder{color:#687a93}
+.join-entry input:focus{border-color:#ed344a;box-shadow:0 0 0 2px rgba(237,52,74,.18)}
+.join-entry button{background:#ed344a;color:white}
+.join-entry button:hover{background:#ff5064}
+.projection-video{left:33.7%;top:30.5%;width:32.6%;height:24.8%;object-fit:cover;box-shadow:0 0 0 2px rgba(3,5,9,.9),0 0 24px rgba(0,0,0,.8)}
+@media(max-width:720px){.projection-video{left:20.5%;top:30.5%;width:59%;height:24.8%}}
+.stop{background:rgba(12,19,30,.92);border-color:rgba(108,145,197,.34);color:#dfe9f7}
+.shareinfo{background:linear-gradient(110deg,#101a29,#0a111b);border-color:rgba(108,145,197,.3)}
+.shareinfo small{color:#a9bdd9}
+.shareinfo strong{color:#fff0f2}
+.shareinfo button{border-color:rgba(237,52,74,.48);background:rgba(237,52,74,.12);color:#ffe1e5}
+.hint{color:#afbdd0}
+.quality{color:#9eafc6}
+.quality.low{color:#ff7786}
