@@ -6,9 +6,9 @@ function showSession(){home.classList.add('hidden');session.classList.remove('hi
 function makeRoom(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(36).padStart(2,'0')).join('').slice(0,8).toUpperCase()}
 async function startHost(){
   if(!window.Peer){alert('Connexion au service de signalisation impossible. Vérifie ta connexion et recharge la page.');return}
-  mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Réglage qualité : jusqu’à 1080p, 30 images/s et 8 Mb/s. Choisis « Écran entier » et active le partage audio si l’option apparaît.';setStatus('Préparation du partage…');
+  mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Profil fluide : jusqu’à 1080p, 60 images/s et un plafond de 50 Mb/s. La fluidité est prioritaire ; si le débit manque, la résolution peut baisser. Choisis « Écran entier » et active le partage audio.';setStatus('Préparation du partage…');
   try{
-    localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:30,max:30}},audio:true,systemAudio:'include'});
+    localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include'});
     video.srcObject=localStream;video.muted=true;placeholder.classList.add('hidden');
     const room=makeRoom();$('roomCode').textContent=room;
     peer=new Peer('ecranlive-'+room.toLowerCase(),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
@@ -47,9 +47,9 @@ async function tuneVideoSender(mediaCall){
       try{
         const parameters=sender.getParameters();
         if(parameters.encodings?.length){
-          parameters.encodings[0].maxBitrate=8_000_000;
-          parameters.encodings[0].maxFramerate=30;
-          parameters.degradationPreference='maintain-resolution';
+          parameters.encodings[0].maxBitrate=50_000_000;
+          parameters.encodings[0].maxFramerate=60;
+          parameters.degradationPreference='maintain-framerate';
           await sender.setParameters(parameters);
         }
       }catch(error){console.warn('Could not apply high-quality video settings',error)}
