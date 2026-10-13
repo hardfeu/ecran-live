@@ -6,3 +6,25 @@
 @media(max-width:720px){.shell{width:min(100% - 28px,620px)}.top{height:66px}.secure{font-size:8px;letter-spacing:.8px}.hero{padding:27px 0 30px}.hero-title{margin-bottom:20px}h1{font-size:clamp(32px,7.8vw,46px);letter-spacing:-1.1px}.room-scene{height:clamp(330px,94vw,430px);aspect-ratio:auto;border-radius:13px}.room-art{object-fit:cover;object-position:center}.tv-button{left:50%;top:27.5%;width:clamp(150px,52vw,205px);height:46px;font-size:8px;gap:7px}.tv-play{height:20px;width:20px;font-size:9px}.remote-control{left:50%;top:64%;width:min(245px,76vw);min-height:116px;padding:11px 14px 9px;border-radius:24px;transform:translateX(-50%) rotate(-6deg)}.remote-top{font-size:7px}.remote-label{margin-top:7px}.remote-entry input{padding:7px;font-size:9px}.remote-entry button{width:30px}.room-note{left:4%;bottom:3%;font-size:7px}.session{padding:24px 0 36px;min-height:70vh}.shareinfo{padding:13px}.shareinfo strong{font-size:18px}.stage{max-height:calc(100vh - 230px)}footer{flex-wrap:wrap;justify-content:center;text-align:center;gap:8px 16px;padding-bottom:22px}footer span:nth-child(2){display:none}}
 @media(max-width:380px){.shell{width:calc(100% - 22px)}.secure{font-size:7px}.hero{padding-top:23px}.room-scene{height:340px}.tv-button{left:50%;width:clamp(145px,50vw,180px);height:44px;font-size:7px}.remote-control{left:50%;width:76vw;min-height:109px;padding:10px 12px 8px}.remote-label{font-size:6px}.room-note{letter-spacing:.7px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Actions sit above the cinema photo; the live stream is projected into the screen. */
+.home-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 18px}
+.share-button,.join-control{min-height:72px;border:1px solid rgba(232,197,141,.34);border-radius:11px;background:linear-gradient(120deg,rgba(42,34,31,.96),rgba(25,21,20,.96));box-shadow:0 10px 28px rgba(0,0,0,.24);padding:13px 17px}
+.share-button{display:flex;align-items:center;justify-content:center;gap:11px;color:#30251e;background:linear-gradient(135deg,#f1d9ac,#d5ad72);font:700 11px var(--mono);letter-spacing:.55px;cursor:pointer}
+.share-button:hover{filter:brightness(1.08)}
+.share-button:disabled{opacity:.65;cursor:wait}
+.share-button .tv-play{height:27px;width:27px;display:grid;place-items:center;border-radius:50%;background:rgba(72,48,35,.13);font-size:11px}
+.join-control{display:grid;align-content:center;gap:8px}
+.join-control label{color:#bca99b;font:8px var(--mono);letter-spacing:1.1px}
+.join-entry{display:flex;gap:7px}
+.join-entry input{width:100%;min-width:0;border:1px solid rgba(232,197,141,.32);border-radius:5px;padding:8px 10px;background:#0d0b0c;color:var(--gold-bright);outline:none;font:10px var(--mono);letter-spacing:1px}
+.join-entry input::placeholder{color:#766a63}
+.join-entry input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(232,197,141,.14)}
+.join-entry button{flex:none;width:36px;border:0;border-radius:5px;background:var(--gold);color:#291d19;font-size:16px;cursor:pointer}
+.join-entry button:hover{background:var(--gold-bright)}
+.room-scene{aspect-ratio:860/482}
+.room-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.projection-video{display:none;position:absolute;left:33.7%;top:14.5%;width:32.6%;height:24.8%;z-index:2;border:0;background:#050505;object-fit:contain;box-shadow:0 0 16px rgba(0,0,0,.8)}
+.room-scene.is-projecting .projection-video{display:block}
+body.in-session .home-controls{display:none}
+@media(max-width:720px){.home-controls{grid-template-columns:1fr;gap:9px;margin-bottom:13px}.share-button,.join-control{min-height:60px;padding:10px 13px}.join-control{grid-template-columns:1fr auto;align-items:center;gap:10px}.join-control label{font-size:7px}.join-entry{min-width:0}.join-entry input{padding:8px}.room-scene{height:clamp(330px,94vw,430px);aspect-ratio:auto}.projection-video{left:20.5%;top:14.5%;width:59%;height:25%}}

@@ -23,10 +23,10 @@ Ne publie jamais de clé API, de mot de passe ou d'identifiant privé dans le d�
 
 ## Utilisation
 
-1. Sur le PC, ouvre la page HTTPS et clique sur « PARTAGER L’ÉCRAN » sur le téléviseur.
+1. Sur le PC, ouvre la page HTTPS et clique sur « PARTAGER MON ÉCRAN » au-dessus de la photo.
 2. Dans la boîte de dialogue, sélectionne l’écran entier et coche le partage audio système s’il est proposé.
-3. Donne le code de salle affiché ; sur son Mac, elle le saisit dans le champ de la télécommande puis rejoint la séance.
-4. Elle peut activer le son dans les commandes vidéo du navigateur. « Arrêter » coupe les pistes capturées.
+3. Donne le code de salle affiché ; sur son Mac, elle saisit le code dans le champ au-dessus de la photo puis rejoint la séance.
+4. Le flux partagé apparaît sur l’écran de projection dans la photo. Elle peut activer le son dans les commandes vidéo. « Quitter la salle » coupe les pistes capturées.
 
 Utiliser un navigateur à jour. Le profil haute qualité demande jusqu'à 1080p, 60 images/s et autorise un plafond vidéo de 100 Mb/s. La capture vidéo privilégie aussi la fluidité pour les contenus en mouvement. La négociation préfère H.264 puis garde les autres codecs comme secours ; le codec effectif apparaît dans l’indicateur. H.264 peut utiliser un encodeur matériel s’il est pris en charge et activé sur les deux appareils, mais cela n’est pas garanti. Ces réglages sont des préférences, pas une garantie de cadence ou de débit : la source capturée, le navigateur, l’encodage, le Mac et le trajet réseau peuvent limiter le résultat. WebRTC adapte l’envoi à la capacité réelle du PC et du réseau. Pendant le partage, l’indicateur affiche la résolution, la cadence, le codec et le débit vidéo observés. La capture audio système dépend du navigateur et du choix de source ; les navigateurs ne garantissent pas tous sa disponibilité. Le site n’active pas le micro.
 

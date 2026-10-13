@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#100b0c">
   <meta name="description" content="CinéLive — votre salle de cinéma privée en direct.">
   <title>CinéLive — votre salle privée</title>
-  <link rel="stylesheet" href="style.css?v=cinema-photo-2">
+  <link rel="stylesheet" href="style.css?v=cinema-controls">
 </head>
 <body>
   <main class="shell">
@@ -19,22 +19,21 @@
         <div class="eyebrow"><span class="eyebrow-line"></span> VOTRE SOIRÉE CINÉ</div>
         <h1>Installez-vous.<br><em>La séance commence.</em></h1>
       </div>
+      <div class="home-controls">
+        <button id="hostButton" class="share-button"><span class="tv-play">▶</span><span>PARTAGER MON ÉCRAN</span></button>
+        <form id="watchForm" class="join-control">
+          <label for="roomInput">REJOINDRE AVEC UN CODE</label>
+          <div class="join-entry"><input id="roomInput" placeholder="CODE DE LA SALLE" maxlength="8" autocomplete="off" aria-label="Code de salle"><button aria-label="Rejoindre la séance">→</button></div>
+        </form>
+      </div>
       <div id="home" class="room-scene">
         <img class="room-art" src="salle-cinema.webp" alt="Salle de cinéma privée avec grand écran et canapé">
-        <button id="hostButton" class="tv-button"><span class="tv-play">▶</span><span>PARTAGER L’ÉCRAN</span></button>
-        <form id="watchForm" class="remote-control">
-          <div class="remote-top"><span class="remote-power">⏻</span><span>TÉLÉCOMMANDE</span><span class="remote-led"></span></div>
-          <label class="remote-label" for="roomInput">CODE POUR REJOINDRE</label>
-          <div class="remote-entry"><input id="roomInput" placeholder="CODE SALLE" maxlength="8" autocomplete="off" aria-label="Code de salle"><button aria-label="Rejoindre la séance">→</button></div>
-          <div class="remote-buttons" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-        </form>
-        <div class="room-note"><span>✦</span> SOIRÉE EN DUO</div>
+        <video id="video" class="projection-video" autoplay playsinline controls></video>
       </div>
     </section>
     <section id="session" class="session hidden">
       <div class="sessionbar"><div class="liveinfo"><span class="session-eyebrow">SÉANCE EN COURS</span><span id="status"><i></i> En attente</span><span id="quality" class="quality"></span></div><button id="stopButton" class="stop">Quitter la salle</button></div>
       <div id="shareInfo" class="shareinfo hidden"><div><small>CODE D’ACCÈS À LA SALLE</small><strong id="roomCode"></strong></div><button id="copyButton">Copier l’invitation</button></div>
-      <div class="stage"><video id="video" autoplay playsinline controls></video><div id="placeholder" class="placeholder"><span>◉</span><p>Le flux apparaîtra ici</p></div></div>
       <p id="hint" class="hint"></p>
     </section>
     <footer><span>© CinéLive</span><span>FAIT POUR VOS SOIRÉES À DEUX</span><span>Brave · Chrome · Edge</span></footer>
