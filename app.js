@@ -12,6 +12,8 @@ async function startHost(){
     // Favor frame rate for movies and other moving content. This is a browser hint, not a guarantee.
     const capturedVideo=localStream.getVideoTracks()[0];
     if(capturedVideo&&'contentHint'in capturedVideo)capturedVideo.contentHint='motion';
+    // Re-apply the target after capture and read back what the browser actually selected.
+    if(capturedVideo){try{await capturedVideo.applyConstraints({frameRate:{ideal:60,max:60}})}catch(error){console.warn('Could not request 60 fps from screen capture',error)}}
     video.srcObject=localStream;video.muted=true;placeholder.classList.add('hidden');
     const room=makeRoom();$('roomCode').textContent=room;
     peer=new Peer('ecranlive-'+room.toLowerCase(),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
@@ -76,9 +78,11 @@ function startStats(mediaCall,direction){
       lastVideoStats={bytes,time:now};
       const size=row.frameWidth&&row.frameHeight?`${row.frameWidth}×${row.frameHeight}`:'résolution en mesure';
       const fps=row.framesPerSecond?` · ${Math.round(row.framesPerSecond)} i/s`:'';
+      const sourceFps=mode==='host'?localStream?.getVideoTracks?.()[0]?.getSettings?.().frameRate:null;
+      const sourceInfo=sourceFps?` · capture ${Math.round(sourceFps)} i/s`:'';
       const mbps=rate?` · ${(rate/1_000_000).toFixed(1)} Mb/s`:'';
       const limitation=row.qualityLimitationReason&&row.qualityLimitationReason!=='none'?` · limité par ${row.qualityLimitationReason==='bandwidth'?'le réseau':'le PC'}`:'';
-      $('quality').textContent=`Vidéo ${size}${fps}${mbps}${limitation}`;
+      $('quality').textContent=`Vidéo ${size}${fps}${sourceInfo}${mbps}${limitation}`;
       $('quality').classList.toggle('low',rate>0&&rate<1_500_000);
     }catch(error){console.debug('Video stats unavailable',error)}
   },1000);
