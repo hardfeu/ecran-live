@@ -1,0 +1,45 @@
+{
+  "name": "cinelive-vlc-companion",
+  "version": "1.0.0",
+  "description": "Diffuse la fenêtre VLC directement vers CinéLive.",
+  "main": "main.cjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis"
+  },
+  "dependencies": {
+    "peerjs": "1.5.4"
+  },
+  "devDependencies": {
+    "electron": "44.7.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "fr.cinelive.vlccompanion",
+    "productName": "CineLive VLC",
+    "artifactName": "CineLive-VLC-Setup.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "renderer.js",
+      "index.html",
+      "styles.css",
+      "node_modules/peerjs/**/*"
+    ],
+    "win": {
+      "target": ["nsis"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CinéLive VLC"
+    }
+  }
+}

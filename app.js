@@ -3,33 +3,6 @@ const home=$('home'),session=$('session'),video=$('video'),status=$('status');
 let peer=null,localStream=null,call=null,mode='',offerResources=[],statsTimer=null,lastVideoStats=null;
 function setStatus(text,live=false){status.textContent='';const dot=document.createElement('i');status.append(dot,document.createTextNode(' '+text));status.classList.toggle('live',live)}
 function showSession(){document.body.classList.add('in-session');session.classList.remove('hidden')}
-function makeRoom(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(36).padStart(2,'0')).join('').slice(0,8).toUpperCase()}
-async function startHost(){
-  if(!window.Peer){alert('Connexion au service de signalisation impossible. Vérifie ta connexion et recharge la page.');return}
-  mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Ouvre le film dans VLC. Dans la fenêtre de partage, choisis « Fenêtre », puis VLC. Active le partage audio si Brave le propose : seule la fenêtre VLC sera envoyée.';setStatus('Préparation du partage…');
-  try{
-    localStream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'window',width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include',monitorTypeSurfaces:'exclude',selfBrowserSurface:'exclude',preferCurrentTab:false});
-    const pickedSurface=localStream.getVideoTracks()[0]?.getSettings().displaySurface;
-    if(pickedSurface&&pickedSurface!=='window'){
-      localStream.getTracks().forEach(track=>track.stop());localStream=null;
-      const error=new Error('Choisis « Fenêtre », puis sélectionne VLC dans la liste.');error.name='WrongCaptureSurfaceError';throw error;
-    }
-    // Favor frame rate for movies and other moving content. This is a browser hint, not a guarantee.
-    const capturedVideo=localStream.getVideoTracks()[0];
-    if(capturedVideo&&'contentHint'in capturedVideo)capturedVideo.contentHint='motion';
-    // Re-apply the target after capture and read back what the browser actually selected.
-    if(capturedVideo){try{await capturedVideo.applyConstraints({frameRate:{ideal:60,max:60}})}catch(error){console.warn('Could not request 60 fps from screen capture',error)}}
-    video.srcObject=localStream;video.muted=true;home.classList.add('is-projecting');video.play().catch(()=>{});
-    const room=makeRoom();$('roomCode').textContent=room;
-    peer=new Peer('ecranlive-'+room.toLowerCase(),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
-    peer.on('open',()=>setStatus('En attente de spectateur',true));
-    peer.on('call',incoming=>{call=incoming;incoming.answer(localStream,{sdpTransform:preferH264InSdp});tuneVideoSender(incoming);startStats(incoming,'outbound-rtp');incoming.on('close',()=>{stopStats();setStatus('Connexion interrompue')});setStatus('Connecté — partage en direct',true)});
-    peer.on('error',err=>{setStatus('Erreur de connexion');$('hint').textContent='Erreur : '+err.type+'. Essaie de recharger la page et de relancer le partage.'});
-    if(!localStream.getAudioTracks().length)$('hint').textContent='L’écran est partagé, mais le navigateur n’a pas fourni de piste audio. Arrête et réessaie en activant le partage audio dans la fenêtre de sélection.';
-    localStream.getVideoTracks()[0].addEventListener('ended',stopSession);
-    $('copyButton').onclick=async()=>{const url=new URL(location.href);url.search='?room='+room;try{await navigator.clipboard.writeText(url.href);$('copyButton').textContent='Lien copié ✓';setTimeout(()=>$('copyButton').textContent='Copier le lien',1800)}catch{$('hint').textContent='Ton code est '+room+'. Envoie-lui ce lien : '+url.href}};
-  }catch(e){setStatus('Partage non démarré');$('hint').textContent=e.name==='NotAllowedError'?'Autorisation refusée ou partage annulé.':e.message;document.body.classList.remove('in-session');session.classList.add('hidden')}
-}
 function startViewer(room){
   room=room.trim().toLowerCase();if(!/^[a-z0-9]{4,8}$/.test(room)){alert('Entre un code de partage valide.');return}
   if(!window.Peer){alert('Connexion au service de signalisation impossible. Recharge la page.');return}
@@ -107,7 +80,6 @@ function startStats(mediaCall,direction){
 }
 function stopStats(){if(statsTimer){clearInterval(statsTimer);statsTimer=null}lastVideoStats=null;$('quality').textContent='';$('quality').classList.remove('low')}
 function stopSession(){stopStats();if(call){call.close();call=null}if(peer){peer.destroy();peer=null}if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}for(const item of offerResources){if(item instanceof MediaStream)item.getTracks().forEach(t=>t.stop());else if(item instanceof AudioContext)item.close();else if(item instanceof OscillatorNode)item.stop()}offerResources=[];video.srcObject=null;video.muted=false;home.classList.remove('is-projecting');session.classList.add('hidden');document.body.classList.remove('in-session');$('shareInfo').classList.add('hidden');mode=''}
-$('hostButton').addEventListener('click',startHost);
 $('watchForm').addEventListener('submit',e=>{e.preventDefault();startViewer($('roomInput').value)});
 $('stopButton').addEventListener('click',stopSession);
 const initialRoom=new URLSearchParams(location.search).get('room');if(initialRoom){$('roomInput').value=initialRoom;startViewer(initialRoom)}

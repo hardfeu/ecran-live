@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#070a10">
-  <meta name="description" content="CinéLive — votre salle de cinéma privée en direct.">
+  <meta name="description" content="CinéLive — diffuse ton film VLC dans ta salle de cinéma privée.">
   <title>CinéLive — votre salle privée</title>
-  <link rel="stylesheet" href="style.css?v=vlc-window">
+  <link rel="stylesheet" href="style.css?v=vlc-companion">
 </head>
 <body>
   <main class="shell">
@@ -20,7 +20,7 @@
         <h1>Installez-vous.<br><em>La séance commence.</em></h1>
       </div>
       <div class="home-controls">
-        <button id="hostButton" class="share-button"><span class="tv-play">▶</span><span class="share-copy">PARTAGER VLC<small>Ouvre ton film dans VLC avant de commencer</small></span></button>
+        <a class="share-button download-button" href="https://github.com/hardfeu/ecran-live/releases/latest/download/CineLive-VLC-Setup.exe"><span class="tv-play">↓</span><span class="share-copy">TÉLÉCHARGER L’APP VLC<small>Windows · diffusion directe depuis VLC</small></span></a>
         <form id="watchForm" class="join-control">
           <label for="roomInput">REJOINDRE AVEC UN CODE</label>
           <div class="join-entry"><input id="roomInput" placeholder="CODE DE LA SALLE" maxlength="8" autocomplete="off" aria-label="Code de salle"><button aria-label="Rejoindre la séance">→</button></div>
@@ -39,6 +39,6 @@
     <footer><span>© CinéLive</span><span>FAIT POUR VOS SOIRÉES À DEUX</span><span>Brave · Chrome · Edge</span></footer>
   </main>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="app.js?v=vlc-window"></script>
+  <script src="app.js?v=vlc-companion"></script>
 </body>
 </html>
