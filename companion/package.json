@@ -1,6 +1,6 @@
 {
   "name": "cinelive-vlc-companion",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Diffuse la fenêtre VLC directement vers CinéLive.",
   "main": "main.cjs",
   "private": true,

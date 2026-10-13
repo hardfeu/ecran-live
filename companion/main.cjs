@@ -11,7 +11,7 @@ function createWindow() {
     height: 760,
     minWidth: 560,
     minHeight: 620,
-    title: 'CinéLive VLC',
+    title: 'CinéLive — Connexion',
     backgroundColor: '#070a10',
     autoHideMenuBar: true,
     webPreferences: {
