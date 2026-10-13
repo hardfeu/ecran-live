@@ -1,19 +1,19 @@
 const $=id=>document.getElementById(id);
 const home=$('home'),session=$('session'),video=$('video'),placeholder=$('placeholder'),status=$('status');
-let peer=null,localStream=null,call=null,mode='',offerResources=[];
+let peer=null,localStream=null,call=null,mode='',offerResources=[],statsTimer=null,lastVideoStats=null;
 function setStatus(text,live=false){status.textContent='';const dot=document.createElement('i');status.append(dot,document.createTextNode(' '+text));status.classList.toggle('live',live)}
 function showSession(){home.classList.add('hidden');session.classList.remove('hidden')}
 function makeRoom(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(36).padStart(2,'0')).join('').slice(0,8).toUpperCase()}
 async function startHost(){
   if(!window.Peer){alert('Connexion au service de signalisation impossible. Vérifie ta connexion et recharge la page.');return}
-  mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Choisis « Écran entier » dans la fenêtre du navigateur et active le partage audio si l’option apparaît.';setStatus('Préparation du partage…');
+  mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Réglage qualité : jusqu’à 1080p, 30 images/s et 8 Mb/s. Choisis « Écran entier » et active le partage audio si l’option apparaît.';setStatus('Préparation du partage…');
   try{
-    localStream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:30,max:60}},audio:true,systemAudio:'include'});
+    localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:30,max:30}},audio:true,systemAudio:'include'});
     video.srcObject=localStream;video.muted=true;placeholder.classList.add('hidden');
     const room=makeRoom();$('roomCode').textContent=room;
     peer=new Peer('ecranlive-'+room.toLowerCase(),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
     peer.on('open',()=>setStatus('En attente de ta copine',true));
-    peer.on('call',incoming=>{call=incoming;incoming.answer(localStream);incoming.on('close',()=>setStatus('Connexion interrompue'));setStatus('Connecté — partage en direct',true)});
+    peer.on('call',incoming=>{call=incoming;incoming.answer(localStream);tuneVideoSender(incoming);startStats(incoming,'outbound-rtp');incoming.on('close',()=>{stopStats();setStatus('Connexion interrompue')});setStatus('Connecté — partage en direct',true)});
     peer.on('error',err=>{setStatus('Erreur de connexion');$('hint').textContent='Erreur : '+err.type+'. Essaie de recharger la page et de relancer le partage.'});
     if(!localStream.getAudioTracks().length)$('hint').textContent='L’écran est partagé, mais le navigateur n’a pas fourni de piste audio. Arrête et réessaie en activant le partage audio dans la fenêtre de sélection.';
     localStream.getVideoTracks()[0].addEventListener('ended',stopSession);
@@ -25,7 +25,7 @@ function startViewer(room){
   if(!window.Peer){alert('Connexion au service de signalisation impossible. Recharge la page.');return}
   mode='viewer';showSession();$('shareInfo').classList.add('hidden');setStatus('Connexion au partage…');$('hint').textContent='Le son du partage est activé avec les commandes du lecteur.';
   peer=new Peer({config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
-  peer.on('open',()=>{const offerTracks=createOfferTracks();call=peer.call('ecranlive-'+room,offerTracks);if(!call){setStatus('Partage introuvable');return}call.on('stream',stream=>{video.srcObject=stream;video.muted=false;placeholder.classList.add('hidden');video.play().catch(()=>{});setStatus('En direct',true)});call.on('close',()=>{setStatus('Le partage est terminé');placeholder.classList.remove('hidden')});call.on('error',()=>setStatus('Connexion interrompue'))});
+  peer.on('open',()=>{const offerTracks=createOfferTracks();call=peer.call('ecranlive-'+room,offerTracks);if(!call){setStatus('Partage introuvable');return}call.on('stream',stream=>{video.srcObject=stream;video.muted=false;placeholder.classList.add('hidden');video.play().catch(()=>{});startStats(call,'inbound-rtp');setStatus('En direct',true)});call.on('close',()=>{stopStats();setStatus('Le partage est terminé');placeholder.classList.remove('hidden')});call.on('error',()=>setStatus('Connexion interrompue'))});
   peer.on('error',err=>{setStatus('Partage introuvable');$('hint').textContent='Vérifie que le partage est encore actif et que le code est correct ('+err.type+').'});
 }
 function createOfferTracks(){
@@ -39,7 +39,49 @@ function createOfferTracks(){
   offerResources=[stream,canvas,audioContext,oscillator];
   return stream;
 }
-function stopSession(){if(call){call.close();call=null}if(peer){peer.destroy();peer=null}if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}for(const item of offerResources){if(item instanceof MediaStream)item.getTracks().forEach(t=>t.stop());else if(item instanceof AudioContext)item.close();else if(item instanceof OscillatorNode)item.stop()}offerResources=[];video.srcObject=null;video.muted=false;placeholder.classList.remove('hidden');session.classList.add('hidden');home.classList.remove('hidden');$('shareInfo').classList.add('hidden');mode=''}
+async function tuneVideoSender(mediaCall){
+  for(let attempt=0;attempt<20;attempt++){
+    const pc=mediaCall?.peerConnection;
+    const sender=pc?.getSenders?.().find(item=>item.track?.kind==='video');
+    if(sender){
+      try{
+        const parameters=sender.getParameters();
+        if(parameters.encodings?.length){
+          parameters.encodings[0].maxBitrate=8_000_000;
+          parameters.encodings[0].maxFramerate=30;
+          parameters.degradationPreference='maintain-resolution';
+          await sender.setParameters(parameters);
+        }
+      }catch(error){console.warn('Could not apply high-quality video settings',error)}
+      return;
+    }
+    await new Promise(resolve=>setTimeout(resolve,250));
+  }
+}
+function startStats(mediaCall,direction){
+  stopStats();lastVideoStats=null;$('quality').textContent='Mesure de la qualité…';
+  statsTimer=setInterval(async()=>{
+    try{
+      const pc=mediaCall?.peerConnection;if(!pc)return;
+      const report=await pc.getStats();
+      const row=Array.from(report.values()).find(item=>item.type===direction&&(item.kind==='video'||item.mediaType==='video'));
+      if(!row)return;
+      const bytes=direction==='outbound-rtp'?row.bytesSent:row.bytesReceived;
+      const now=row.timestamp;
+      let rate=0;
+      if(lastVideoStats&&now>lastVideoStats.time)rate=Math.max(0,(bytes-lastVideoStats.bytes)*8*1000/(now-lastVideoStats.time));
+      lastVideoStats={bytes,time:now};
+      const size=row.frameWidth&&row.frameHeight?`${row.frameWidth}×${row.frameHeight}`:'résolution en mesure';
+      const fps=row.framesPerSecond?` · ${Math.round(row.framesPerSecond)} i/s`:'';
+      const mbps=rate?` · ${(rate/1_000_000).toFixed(1)} Mb/s`:'';
+      const limitation=row.qualityLimitationReason&&row.qualityLimitationReason!=='none'?` · limité par ${row.qualityLimitationReason==='bandwidth'?'le réseau':'le PC'}`:'';
+      $('quality').textContent=`Vidéo ${size}${fps}${mbps}${limitation}`;
+      $('quality').classList.toggle('low',rate>0&&rate<1_500_000);
+    }catch(error){console.debug('Video stats unavailable',error)}
+  },1000);
+}
+function stopStats(){if(statsTimer){clearInterval(statsTimer);statsTimer=null}lastVideoStats=null;$('quality').textContent='';$('quality').classList.remove('low')}
+function stopSession(){stopStats();if(call){call.close();call=null}if(peer){peer.destroy();peer=null}if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}for(const item of offerResources){if(item instanceof MediaStream)item.getTracks().forEach(t=>t.stop());else if(item instanceof AudioContext)item.close();else if(item instanceof OscillatorNode)item.stop()}offerResources=[];video.srcObject=null;video.muted=false;placeholder.classList.remove('hidden');session.classList.add('hidden');home.classList.remove('hidden');$('shareInfo').classList.add('hidden');mode=''}
 $('hostButton').addEventListener('click',startHost);
 $('watchForm').addEventListener('submit',e=>{e.preventDefault();startViewer($('roomInput').value)});
 $('stopButton').addEventListener('click',stopSession);
