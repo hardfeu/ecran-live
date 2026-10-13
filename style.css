@@ -11,6 +11,8 @@
 .home-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 18px}
 .share-button,.join-control{min-height:72px;border:1px solid rgba(232,197,141,.34);border-radius:11px;background:linear-gradient(120deg,rgba(42,34,31,.96),rgba(25,21,20,.96));box-shadow:0 10px 28px rgba(0,0,0,.24);padding:13px 17px}
 .share-button{display:flex;align-items:center;justify-content:center;gap:11px;color:#30251e;background:linear-gradient(135deg,#f1d9ac,#d5ad72);font:700 11px var(--mono);letter-spacing:.55px;cursor:pointer}
+.share-copy{display:grid;gap:5px;text-align:left}
+.share-copy small{font:500 9px var(--sans);letter-spacing:0;opacity:.82}
 .share-button:hover{filter:brightness(1.08)}
 .share-button:disabled{opacity:.65;cursor:wait}
 .share-button .tv-play{height:27px;width:27px;display:grid;place-items:center;border-radius:50%;background:rgba(72,48,35,.13);font-size:11px}

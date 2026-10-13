@@ -6,9 +6,14 @@ function showSession(){document.body.classList.add('in-session');session.classLi
 function makeRoom(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(36).padStart(2,'0')).join('').slice(0,8).toUpperCase()}
 async function startHost(){
   if(!window.Peer){alert('Connexion au service de signalisation impossible. Vérifie ta connexion et recharge la page.');return}
-  mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Profil haute qualité : jusqu’à 1080p, 60 images/s et un plafond de 100 Mb/s. H.264 est privilégié quand disponible ; le débit réel s’adapte au PC et au réseau. Choisis « Écran entier » et active le partage audio.';setStatus('Préparation du partage…');
+  mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Ouvre le film dans VLC. Dans la fenêtre de partage, choisis « Fenêtre », puis VLC. Active le partage audio si Brave le propose : seule la fenêtre VLC sera envoyée.';setStatus('Préparation du partage…');
   try{
-    localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include'});
+    localStream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'window',width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include',monitorTypeSurfaces:'exclude',selfBrowserSurface:'exclude',preferCurrentTab:false});
+    const pickedSurface=localStream.getVideoTracks()[0]?.getSettings().displaySurface;
+    if(pickedSurface&&pickedSurface!=='window'){
+      localStream.getTracks().forEach(track=>track.stop());localStream=null;
+      const error=new Error('Choisis « Fenêtre », puis sélectionne VLC dans la liste.');error.name='WrongCaptureSurfaceError';throw error;
+    }
     // Favor frame rate for movies and other moving content. This is a browser hint, not a guarantee.
     const capturedVideo=localStream.getVideoTracks()[0];
     if(capturedVideo&&'contentHint'in capturedVideo)capturedVideo.contentHint='motion';
@@ -23,7 +28,7 @@ async function startHost(){
     if(!localStream.getAudioTracks().length)$('hint').textContent='L’écran est partagé, mais le navigateur n’a pas fourni de piste audio. Arrête et réessaie en activant le partage audio dans la fenêtre de sélection.';
     localStream.getVideoTracks()[0].addEventListener('ended',stopSession);
     $('copyButton').onclick=async()=>{const url=new URL(location.href);url.search='?room='+room;try{await navigator.clipboard.writeText(url.href);$('copyButton').textContent='Lien copié ✓';setTimeout(()=>$('copyButton').textContent='Copier le lien',1800)}catch{$('hint').textContent='Ton code est '+room+'. Envoie-lui ce lien : '+url.href}};
-  }catch(e){setStatus('Partage non démarré');$('hint').textContent=e.name==='NotAllowedError'?'Autorisation refusée ou partage annulé.':'Impossible de capturer l’écran : '+e.message;document.body.classList.remove('in-session');session.classList.add('hidden')}
+  }catch(e){setStatus('Partage non démarré');$('hint').textContent=e.name==='NotAllowedError'?'Autorisation refusée ou partage annulé.':e.message;document.body.classList.remove('in-session');session.classList.add('hidden')}
 }
 function startViewer(room){
   room=room.trim().toLowerCase();if(!/^[a-z0-9]{4,8}$/.test(room)){alert('Entre un code de partage valide.');return}

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#070a10">
   <meta name="description" content="CinéLive — votre salle de cinéma privée en direct.">
   <title>CinéLive — votre salle privée</title>
-  <link rel="stylesheet" href="style.css?v=theatre-no-crop">
+  <link rel="stylesheet" href="style.css?v=vlc-window">
 </head>
 <body>
   <main class="shell">
@@ -20,7 +20,7 @@
         <h1>Installez-vous.<br><em>La séance commence.</em></h1>
       </div>
       <div class="home-controls">
-        <button id="hostButton" class="share-button"><span class="tv-play">▶</span><span>PARTAGER MON ÉCRAN</span></button>
+        <button id="hostButton" class="share-button"><span class="tv-play">▶</span><span class="share-copy">PARTAGER VLC<small>Ouvre ton film dans VLC avant de commencer</small></span></button>
         <form id="watchForm" class="join-control">
           <label for="roomInput">REJOINDRE AVEC UN CODE</label>
           <div class="join-entry"><input id="roomInput" placeholder="CODE DE LA SALLE" maxlength="8" autocomplete="off" aria-label="Code de salle"><button aria-label="Rejoindre la séance">→</button></div>
@@ -39,6 +39,6 @@
     <footer><span>© CinéLive</span><span>FAIT POUR VOS SOIRÉES À DEUX</span><span>Brave · Chrome · Edge</span></footer>
   </main>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=vlc-window"></script>
 </body>
 </html>
