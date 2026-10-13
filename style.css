@@ -64,3 +64,6 @@ body:before{background-image:radial-gradient(rgba(169,198,238,.22) .55px,transpa
 body.in-session .hero-title{display:none}
 body.in-session .hero{padding-top:12px;padding-bottom:8px}
 @media(max-width:720px){.projection-video{left:14.5%;top:29.2%;width:71%;height:29%}.session{padding:15px 0 22px}}
+
+/* Keep the full shared screen visible: the cinema canvas is wider than 16:9. */
+.projection-video{object-fit:contain;background:#030609}
