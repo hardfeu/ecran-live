@@ -3,29 +3,94 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10131c">
-  <title>Écran Live</title>
+  <meta name="theme-color" content="#100b0c">
+  <meta name="description" content="CinéLive — votre salle de cinéma privée en direct.">
+  <title>CinéLive — votre salle privée</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="shell">
-    <header class="top"><a class="brand" href="./">◉ <span>Écran Live</span></a><span class="secure">PARTAGE PRIVÉ</span></header>
+    <header class="top">
+      <a class="brand" href="./" aria-label="CinéLive, accueil"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Ciné<span>Live</span></span></a>
+      <span class="secure"><i></i> VOTRE SALLE PRIVÉE</span>
+    </header>
     <section class="hero">
-      <div class="eyebrow">PARTAGE EN DIRECT</div>
-      <h1>Ton écran,<br><em>en direct.</em></h1>
-      <p class="intro">Partage ton écran et le son de ton PC. Ta copine regarde depuis son Mac, dans son navigateur.</p>
-      <div id="home" class="cards">
-        <button id="hostButton" class="card primary"><span class="icon">↗</span><strong>Je partage</strong><small>Démarrer le partage sur ce PC</small><span class="arrow">→</span></button>
-        <form id="watchForm" class="card secondary"><label for="roomInput"><span class="icon">▷</span><strong>Je regarde</strong></label><small>Entre le code reçu</small><div class="join"><input id="roomInput" placeholder="Code de partage" maxlength="8" autocomplete="off"><button aria-label="Rejoindre">→</button></div></form>
+      <div class="hero-title">
+        <div class="eyebrow"><span class="eyebrow-line"></span> VOTRE SOIRÉE CINÉ</div>
+        <h1>Installez-vous.<br><em>La séance commence.</em></h1>
+      </div>
+      <div id="home" class="room-scene">
+        <svg class="room-art" viewBox="0 0 1200 640" role="img" aria-label="Un salon chaleureux avec un téléviseur, un canapé et deux personnes assises">
+          <defs>
+            <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#493438"/><stop offset=".62" stop-color="#32272a"/><stop offset="1" stop-color="#211a1c"/></linearGradient>
+            <linearGradient id="floor" x2="0" y2="1"><stop stop-color="#503739"/><stop offset="1" stop-color="#211719"/></linearGradient>
+            <linearGradient id="tvScreen" x2="0" y2="1"><stop stop-color="#485c71"/><stop offset=".58" stop-color="#bd8b71"/><stop offset="1" stop-color="#f0c688"/></linearGradient>
+            <linearGradient id="sofa" x2="0" y2="1"><stop stop-color="#765049"/><stop offset="1" stop-color="#3b292b"/></linearGradient>
+            <linearGradient id="sofaSeat" x2="0" y2="1"><stop stop-color="#98665a"/><stop offset="1" stop-color="#5a3b39"/></linearGradient>
+            <linearGradient id="rug" x2="1" y2="0"><stop stop-color="#59403c" stop-opacity="0"/><stop offset=".5" stop-color="#98735c" stop-opacity=".5"/><stop offset="1" stop-color="#59403c" stop-opacity="0"/></linearGradient>
+            <filter id="shadow" x="-.2" y="-.3" width="1.5" height="1.7"><feGaussianBlur stdDeviation="12"/></filter>
+          </defs>
+          <rect width="1200" height="640" fill="url(#wall)"/>
+          <path d="M0 476H1200V640H0Z" fill="url(#floor)"/><path d="M0 470H1200" stroke="#b48b6d" stroke-opacity=".4" stroke-width="5"/>
+          <rect x="706" y="61" width="204" height="155" rx="3" fill="#20191b" stroke="#8d6c57" stroke-width="7"/><rect x="720" y="75" width="176" height="127" fill="#63504a"/><path d="M720 168l63-54 34 30 34-42 45 66Z" fill="#a87d65"/><circle cx="847" cy="102" r="16" fill="#d7b47e"/>
+          <rect x="969" y="0" width="231" height="432" fill="#292023"/><path d="M1000 0V427M1049 0V427M1098 0V427M1147 0V427" stroke="#4c3435" stroke-width="8"/><path d="M985 0V427M1122 0V427" stroke="#8a5a4d" stroke-opacity=".38" stroke-width="2"/>
+          <ellipse cx="573" cy="553" rx="501" ry="76" fill="#100c0d" opacity=".45" filter="url(#shadow)"/>
+          <path d="M142 562c155-56 473-78 822-16l151 51H45Z" fill="url(#rug)"/>
+          <g class="tv-set">
+            <path d="M154 391h335l35 58H119Z" fill="#241a1a"/><path d="M178 447v36m297-36v36" stroke="#1a1314" stroke-width="12" stroke-linecap="round"/>
+            <rect x="99" y="111" width="445" height="295" rx="22" fill="#0c0b0d" stroke="#bb9977" stroke-opacity=".66" stroke-width="3"/>
+            <rect x="119" y="131" width="405" height="253" rx="9" fill="url(#tvScreen)"/>
+            <circle cx="415" cy="186" r="30" fill="#f4d7a0" opacity=".9"/><path d="M120 311l108-92 72 61 55-45 169 103v46H120Z" fill="#62464a"/><path d="M120 336l87-43 101 45 67-55 149 56v45H120Z" fill="#282329"/>
+            <path d="M285 405l-21 44m189-44 23 44" stroke="#191314" stroke-width="12" stroke-linecap="round"/>
+            <circle cx="506" cy="395" r="3" fill="#e3bd82"/><path d="M121 408h400" stroke="#e7d1b3" stroke-opacity=".22" stroke-width="2"/>
+          </g>
+          <g class="lamp"><path d="M70 187v285" stroke="#b18a62" stroke-width="5"/><path d="M38 191q32-79 65 0Z" fill="#b48d65"/><ellipse cx="70" cy="195" rx="33" ry="8" fill="#e3bc81"/><circle cx="70" cy="225" r="72" fill="#dfb673" opacity=".08" filter="url(#shadow)"/></g>
+          <g class="sofa-group">
+            <path d="M572 367q0-53 51-53h479q53 0 53 53v104H572Z" fill="url(#sofa)" stroke="#a67663" stroke-opacity=".36" stroke-width="3"/>
+            <path d="M543 423q0-36 39-36h583q39 0 39 36v109q0 28-34 28H576q-33 0-33-29Z" fill="url(#sofaSeat)" stroke="#b98b70" stroke-opacity=".3" stroke-width="3"/>
+            <path d="M568 493h615v51q0 27-31 27H597q-29 0-29-28Z" fill="#4b3031"/>
+            <path d="M590 563v31m552-31v31" stroke="#241819" stroke-width="15" stroke-linecap="round"/>
+            <path d="M594 388q55-35 116 0v62q-57 30-116-2Zm441 0q54-36 111 1v58q-58 32-111 0Z" fill="#b27e68" opacity=".65"/>
+            <path d="M730 394v102m175-102v102" stroke="#d0a084" stroke-opacity=".17" stroke-width="3"/>
+          </g>
+          <g class="person-one">
+            <path d="M671 359q6-57 65-57 58 0 62 60l-9 90H675Z" fill="#bd8c67"/>
+            <path d="M699 350q-16 52-46 92l-39-7q19-43 25-79 5-37 35-45Z" fill="#d3a374"/>
+            <path d="M684 315q-7-51 37-59 45-5 54 38l-11 30-47 5-20-13Z" fill="#322526"/>
+            <ellipse cx="721" cy="301" rx="34" ry="38" fill="#d4a07a"/>
+            <path d="M692 293q9-48 53-37 25 7 30 34-24-15-42-20-13 22-41 23Z" fill="#322526"/>
+            <path d="M693 301l-10 7 11 5" fill="#c58c68"/><circle cx="709" cy="298" r="2.5" fill="#271b1c"/>
+            <path d="M700 450q44 21 95 5l28 53-24 31H680l-12-39Z" fill="#bd8c67"/>
+            <path d="M698 512q38 20 84 0l-10 34q-37 17-71 0Z" fill="#332528"/>
+          </g>
+          <g class="person-two">
+            <path d="M848 358q5-55 62-55 58 0 63 59l-10 92H852Z" fill="#56636a"/>
+            <path d="M865 348q-7 48-37 88l-37-8q19-37 22-72 3-37 35-49Z" fill="#d8a985"/>
+            <ellipse cx="897" cy="300" rx="34" ry="39" fill="#ddb08b"/>
+            <path d="M864 298q-7-45 34-48 38 0 39 42l-12-15-14 7-17-12-14 24Z" fill="#49302a"/>
+            <path d="M867 302l-10 8 11 4" fill="#c89171"/><circle cx="885" cy="298" r="2.5" fill="#271b1c"/>
+            <path d="M867 452q49 17 94 1l26 52-23 34h-96l-11-39Z" fill="#536168"/>
+            <path d="M875 513q35 19 79 0l-9 34q-33 16-66 0Z" fill="#332528"/>
+          </g>
+          <g class="coffee-table"><path d="M715 553h246l-18 13H735Z" fill="#87624e"/><path d="M746 565v36m181-36v36" stroke="#392729" stroke-width="7"/><path d="M824 545q2-25 16-27 17 3 19 27" fill="#d6b17f"/><path d="M833 520q7-13 15 0" fill="#6d8a69"/></g>
+        </svg>
+        <button id="hostButton" class="tv-button"><span class="tv-play">▶</span><span>PARTAGER L’ÉCRAN</span></button>
+        <form id="watchForm" class="remote-control">
+          <div class="remote-top"><span class="remote-power">⏻</span><span>TÉLÉCOMMANDE</span><span class="remote-led"></span></div>
+          <label class="remote-label" for="roomInput">CODE POUR REJOINDRE</label>
+          <div class="remote-entry"><input id="roomInput" placeholder="CODE SALLE" maxlength="8" autocomplete="off" aria-label="Code de salle"><button aria-label="Rejoindre la séance">→</button></div>
+          <div class="remote-buttons" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        </form>
+        <div class="room-note"><span>✦</span> SOIRÉE EN DUO</div>
       </div>
     </section>
     <section id="session" class="session hidden">
-      <div class="sessionbar"><div class="liveinfo"><span id="status"><i></i> En attente</span><span id="quality" class="quality"></span></div><button id="stopButton" class="stop">Arrêter</button></div>
-      <div id="shareInfo" class="shareinfo hidden"><div><small>CODE DE PARTAGE</small><strong id="roomCode"></strong></div><button id="copyButton">Copier le lien</button></div>
+      <div class="sessionbar"><div class="liveinfo"><span class="session-eyebrow">SÉANCE EN COURS</span><span id="status"><i></i> En attente</span><span id="quality" class="quality"></span></div><button id="stopButton" class="stop">Quitter la salle</button></div>
+      <div id="shareInfo" class="shareinfo hidden"><div><small>CODE D’ACCÈS À LA SALLE</small><strong id="roomCode"></strong></div><button id="copyButton">Copier l’invitation</button></div>
       <div class="stage"><video id="video" autoplay playsinline controls></video><div id="placeholder" class="placeholder"><span>◉</span><p>Le flux apparaîtra ici</p></div></div>
       <p id="hint" class="hint"></p>
     </section>
-    <footer>Utilise Chrome ou Edge pour partager l’écran avec le son du PC.</footer>
+    <footer><span>© CinéLive</span><span>FAIT POUR VOS SOIRÉES À DEUX</span><span>Brave · Chrome · Edge</span></footer>
   </main>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="app.js"></script>
