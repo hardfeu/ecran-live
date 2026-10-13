@@ -57,3 +57,10 @@ body:before{background-image:radial-gradient(rgba(169,198,238,.22) .55px,transpa
 .hint{color:#afbdd0}
 .quality{color:#9eafc6}
 .quality.low{color:#ff7786}
+
+/* Give the projection more of the cinema screen and keep the live room compact. */
+.projection-video{left:31.7%;top:29.4%;width:36.6%;height:28.5%;object-fit:cover}
+.session{padding:18px 0 26px;min-height:0}
+body.in-session .hero-title{display:none}
+body.in-session .hero{padding-top:12px;padding-bottom:8px}
+@media(max-width:720px){.projection-video{left:14.5%;top:29.2%;width:71%;height:29%}.session{padding:15px 0 22px}}

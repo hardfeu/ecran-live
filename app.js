@@ -17,7 +17,7 @@ async function startHost(){
     video.srcObject=localStream;video.muted=true;home.classList.add('is-projecting');video.play().catch(()=>{});
     const room=makeRoom();$('roomCode').textContent=room;
     peer=new Peer('ecranlive-'+room.toLowerCase(),{config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
-    peer.on('open',()=>setStatus('En attente de ta copine',true));
+    peer.on('open',()=>setStatus('En attente de spectateur',true));
     peer.on('call',incoming=>{call=incoming;incoming.answer(localStream,{sdpTransform:preferH264InSdp});tuneVideoSender(incoming);startStats(incoming,'outbound-rtp');incoming.on('close',()=>{stopStats();setStatus('Connexion interrompue')});setStatus('Connecté — partage en direct',true)});
     peer.on('error',err=>{setStatus('Erreur de connexion');$('hint').textContent='Erreur : '+err.type+'. Essaie de recharger la page et de relancer le partage.'});
     if(!localStream.getAudioTracks().length)$('hint').textContent='L’écran est partagé, mais le navigateur n’a pas fourni de piste audio. Arrête et réessaie en activant le partage audio dans la fenêtre de sélection.';
