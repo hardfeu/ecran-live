@@ -8,24 +8,30 @@ let window;
 let listedVlcSources = new Map();
 let selectedVlcSource = null;
 
-async function maximizeVlcWindow(title) {
+async function maximizeVlcWindow(sourceId) {
   const script = [
-    'Add-Type -TypeDefinition \'using System; using System.Runtime.InteropServices; public static class CineliveWindowApi { [DllImport("user32.dll", CharSet=CharSet.Unicode)] public static extern IntPtr FindWindow(string className, string windowName); [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int command); }\'',
-    '$handle = [CineliveWindowApi]::FindWindow($null, $env:CINELIVE_WINDOW_TITLE)',
-    'if ($handle -eq [IntPtr]::Zero) { exit 3 }',
+    'Add-Type -TypeDefinition \'using System; using System.Runtime.InteropServices; public struct CineliveRect { public int Left; public int Top; public int Right; public int Bottom; } public static class CineliveWindowApi { [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int command); [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hWnd, out CineliveRect rect); [DllImport("user32.dll")] public static extern bool IsWindow(IntPtr hWnd); }\'',
+    'if ($env:CINELIVE_SOURCE_ID -notmatch \'^window:(\\d+):\\d+$\') { exit 3 }',
+    '$handle = [IntPtr]::new([Int64]$Matches[1])',
+    'if (-not [CineliveWindowApi]::IsWindow($handle)) { exit 4 }',
     '[void][CineliveWindowApi]::ShowWindowAsync($handle, 3)',
-    'Start-Sleep -Milliseconds 350'
+    'Start-Sleep -Milliseconds 500',
+    '$rect = New-Object CineliveRect',
+    'if (-not [CineliveWindowApi]::GetWindowRect($handle, [ref]$rect)) { exit 5 }',
+    'Write-Output (($rect.Right - $rect.Left).ToString() + \'x\' + ($rect.Bottom - $rect.Top).ToString())'
   ].join('; ');
   try {
-    await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
-      env: { ...process.env, CINELIVE_WINDOW_TITLE: title },
+    const { stdout } = await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
+      env: { ...process.env, CINELIVE_SOURCE_ID: sourceId },
       windowsHide: true,
       timeout: 5000
     });
-    return true;
+    const bounds = stdout.trim().match(/^(\d+)x(\d+)$/);
+    if (!bounds) return { maximized: false, width: 0, height: 0 };
+    return { maximized: true, width: Number(bounds[1]), height: Number(bounds[2]) };
   } catch (error) {
     console.warn('Impossible d’agrandir automatiquement la fenêtre VLC', error.message);
-    return false;
+    return { maximized: false, width: 0, height: 0 };
   }
 }
 
@@ -79,8 +85,8 @@ app.whenReady().then(() => {
     const source = listedVlcSources.get(sourceId);
     if (!source) throw new Error('Cette fenêtre VLC n’est plus disponible. Actualise la liste.');
     selectedVlcSource = source;
-    const maximized = await maximizeVlcWindow(source.name);
-    return { name: source.name, maximized };
+    const windowSize = await maximizeVlcWindow(source.id);
+    return { name: source.name, ...windowSize };
   });
 
   ipcMain.handle('vlc:clear-selection', () => {

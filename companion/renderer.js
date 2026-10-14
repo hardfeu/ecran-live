@@ -69,9 +69,11 @@ async function selectWindow(source) {
     const result = await window.cinelive.selectVlcWindow(source.id);
     selectedWindowId = source.id;
     startButton.disabled = false;
-    $('captureNote').textContent = result.maximized
-      ? 'VLC a été agrandi automatiquement pour améliorer la résolution. Garde-le ouvert pendant la séance.'
-      : 'VLC est sélectionné. Agrandis sa fenêtre manuellement avant de lancer si la capture reste petite.';
+    $('captureNote').textContent = result.maximized && result.width >= 1280 && result.height >= 720
+      ? `Fenêtre VLC agrandie (${result.width}×${result.height}). Garde-la ouverte pendant la séance.`
+      : result.maximized
+        ? `La fenêtre capturée fait seulement ${result.width}×${result.height}. Essaie « VLC media player » dans la liste plutôt que « Direct3D output », puis actualise.`
+        : 'Windows n’a pas pu agrandir cette fenêtre. Choisis « VLC media player » dans la liste ou agrandis VLC manuellement.';
     renderWindows(await window.cinelive.listVlcWindows());
   } catch (error) {
     selectedWindowId = null;
