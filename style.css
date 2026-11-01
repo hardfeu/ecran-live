@@ -28,6 +28,10 @@
 .record-hint{flex:1 1 100%;margin:0;color:#b5c0d0;font-size:10px;line-height:1.5}
 .record-actions{display:flex;gap:8px;margin-left:auto}
 .session-record-button{display:none;align-items:center;gap:9px;margin:4px 0 0;padding:10px 13px;border:1px solid rgba(237,52,74,.42);border-radius:8px;background:rgba(237,52,74,.11);color:#ffe5e8;font:600 10px var(--sans);cursor:pointer}
+.session-share-button{display:none;align-items:center;gap:10px;margin:8px 0 0;padding:11px 14px;border:1px solid rgba(237,52,74,.48);border-radius:8px;background:linear-gradient(125deg,#ed344a,#a92339);color:#fff;font:700 11px var(--sans);cursor:pointer}
+.session-share-button>span:last-child{display:grid;gap:4px;text-align:left}
+.session-share-button small{font:400 9px var(--sans);opacity:.82}
+.viewer-mode #sessionShareButton{display:inline-flex}
 .session-record-button:hover{border-color:#ed344a;background:rgba(237,52,74,.2)}
 .session-record-button .record-dot{width:9px;height:9px}
 .host-mode #sessionRecordButton{display:inline-flex}

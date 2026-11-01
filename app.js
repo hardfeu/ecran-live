@@ -7,7 +7,7 @@ function showSession(){document.body.classList.add('in-session');session.classLi
 function makeRoom(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(36).padStart(2,'0')).join('').slice(0,8).toUpperCase()}
 async function startHost(){
   if(recorder||!window.Peer){alert(recorder?'Arrête l’enregistrement avant de lancer un partage.':'Connexion au service de signalisation impossible. Vérifie ta connexion et recharge la page.');return}
-  document.body.classList.add('host-mode');
+  document.body.classList.add('host-mode');document.body.classList.remove('viewer-mode');
   mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Profil haute qualité : jusqu’à 1080p, 60 images/s et un plafond de 100 Mb/s. H.264 est privilégié quand disponible ; le débit réel s’adapte au PC et au réseau. Choisis « Écran entier » et active le partage audio.';setStatus('Préparation du partage…');
   try{
     localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include'});
@@ -100,7 +100,7 @@ function finishRecording(){
 function startViewer(room){
   room=room.trim().toLowerCase();if(!/^[a-z0-9]{4,8}$/.test(room)){alert('Entre un code de partage valide.');return}
   if(!window.Peer){alert('Connexion au service de signalisation impossible. Recharge la page.');return}
-  mode='viewer';document.body.classList.remove('host-mode');showSession();$('shareInfo').classList.add('hidden');setStatus('Connexion au partage…');$('hint').textContent='Le son du partage est activé avec les commandes du lecteur.';
+  mode='viewer';document.body.classList.remove('host-mode');document.body.classList.add('viewer-mode');showSession();$('shareInfo').classList.add('hidden');setStatus('Connexion au partage…');$('hint').textContent='Le son du partage est activé avec les commandes du lecteur.';
   peer=new Peer({config:{iceServers:[{urls:'stun:stun.l.google.com:19302'}]}});
   peer.on('open',()=>{const offerTracks=createOfferTracks();call=peer.call('ecranlive-'+room,offerTracks,{sdpTransform:preferH264InSdp});if(!call){setStatus('Partage introuvable');return}call.on('stream',stream=>{video.srcObject=stream;video.muted=false;home.classList.add('is-projecting');video.play().catch(()=>{});startStats(call,'inbound-rtp');setStatus('En direct',true)});call.on('close',()=>{stopStats();home.classList.remove('is-projecting');setStatus('Le partage est terminé')});call.on('error',()=>setStatus('Connexion interrompue'))});
   peer.on('error',err=>{setStatus('Partage introuvable');$('hint').textContent='Vérifie que le partage est encore actif et que le code est correct ('+err.type+').'});
@@ -173,8 +173,9 @@ function startStats(mediaCall,direction){
   },1000);
 }
 function stopStats(){if(statsTimer){clearInterval(statsTimer);statsTimer=null}lastVideoStats=null;$('quality').textContent='';$('quality').classList.remove('low')}
-function stopSession(){stopStats();if(call){call.close();call=null}if(peer){peer.destroy();peer=null}if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}for(const item of offerResources){if(item instanceof MediaStream)item.getTracks().forEach(t=>t.stop());else if(item instanceof AudioContext)item.close();else if(item instanceof OscillatorNode)item.stop()}offerResources=[];video.srcObject=null;video.muted=false;home.classList.remove('is-projecting');session.classList.add('hidden');document.body.classList.remove('in-session','host-mode');$('shareInfo').classList.add('hidden');mode=''}
+function stopSession(){stopStats();if(call){call.close();call=null}if(peer){peer.destroy();peer=null}if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}for(const item of offerResources){if(item instanceof MediaStream)item.getTracks().forEach(t=>t.stop());else if(item instanceof AudioContext)item.close();else if(item instanceof OscillatorNode)item.stop()}offerResources=[];video.srcObject=null;video.muted=false;home.classList.remove('is-projecting');session.classList.add('hidden');document.body.classList.remove('in-session','host-mode','viewer-mode');$('shareInfo').classList.add('hidden');mode=''}
 $('hostButton').addEventListener('click',startHost);
+$('sessionShareButton').addEventListener('click',()=>{stopSession();startHost()});
 $('recordButton').addEventListener('click',startRecording);
 $('sessionRecordButton').addEventListener('click',startRecording);
 $('stopRecordButton').addEventListener('click',stopRecording);

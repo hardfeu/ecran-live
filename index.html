@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#070a10">
   <meta name="description" content="CinéLive — partage ton écran avec le son dans ta salle de cinéma privée.">
   <title>CinéLive — votre salle privée</title>
-  <link rel="stylesheet" href="style.css?v=local-recorder">
+  <link rel="stylesheet" href="style.css?v=share-own-turn">
 </head>
 <body>
   <main class="shell">
@@ -41,11 +41,12 @@
       <div class="sessionbar"><div class="liveinfo"><span class="session-eyebrow">SÉANCE EN COURS</span><span id="status"><i></i> En attente</span><span id="quality" class="quality"></span></div><button id="stopButton" class="stop">Quitter la salle</button></div>
       <div id="shareInfo" class="shareinfo hidden"><div><small>CODE D’ACCÈS À LA SALLE</small><strong id="roomCode"></strong></div><button id="copyButton">Copier l’invitation</button></div>
       <p id="hint" class="hint"></p>
+      <button id="sessionShareButton" class="session-share-button"><span class="tv-play">▶</span><span>Partager mon écran à mon tour<small>Quitter le visionnage et lancer ma propre salle</small></span></button>
       <button id="sessionRecordButton" class="session-record-button"><span class="record-dot"></span><span>Enregistrer cette capture sur mon appareil</span></button>
     </section>
     <footer><span>© CinéLive</span><span>FAIT POUR VOS SOIRÉES À DEUX</span><span>Brave · Chrome · Edge</span></footer>
   </main>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="app.js?v=local-recorder"></script>
+  <script src="app.js?v=share-own-turn"></script>
 </body>
 </html>
