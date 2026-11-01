@@ -24,7 +24,7 @@ async function startHost(){
     peer.on('error',err=>{setStatus('Erreur de connexion');$('hint').textContent='Erreur : '+err.type+'. Essaie de recharger la page et de relancer le partage.'});
     if(!localStream.getAudioTracks().length)$('hint').textContent='L’écran est partagé, mais le navigateur n’a pas fourni de piste audio. Arrête et réessaie en activant le partage audio dans la fenêtre de sélection.';
     localStream.getVideoTracks()[0].addEventListener('ended',stopSession);
-    $('copyButton').onclick=async()=>{const url=new URL(location.href);url.search='?room='+room;try{await navigator.clipboard.writeText(url.href);$('copyButton').textContent='Lien copié ✓';setTimeout(()=>$('copyButton').textContent='Copier le lien',1800)}catch{$('hint').textContent='Ton code est '+room+'. Envoie-lui ce lien : '+url.href}};
+    $('copyButton').onclick=async()=>{const url=new URL(location.origin+location.pathname);url.searchParams.set('room',room);url.searchParams.set('v','independent-sessions-3');try{await navigator.clipboard.writeText(url.href);$('copyButton').textContent='Lien copié ✓';setTimeout(()=>$('copyButton').textContent='Copier le lien',1800)}catch{$('hint').textContent='Ton code est '+room+'. Envoie-lui ce lien : '+url.href}};
   }catch(e){setStatus('Partage non démarré');$('hint').textContent=e.name==='NotAllowedError'?'Autorisation refusée ou partage annulé.':'Impossible de capturer l’écran : '+e.message;document.body.classList.remove('in-session','host-mode');session.classList.add('hidden');mode=''}
 }
 function formatRecordTime(milliseconds){const seconds=Math.floor(milliseconds/1000);return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`}
