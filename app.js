@@ -174,7 +174,7 @@ function startStats(mediaCall,direction){
 }
 function stopStats(){if(statsTimer){clearInterval(statsTimer);statsTimer=null}lastVideoStats=null;$('quality').textContent='';$('quality').classList.remove('low')}
 function stopSession(){stopStats();if(call){call.close();call=null}if(peer){peer.destroy();peer=null}if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}for(const item of offerResources){if(item instanceof MediaStream)item.getTracks().forEach(t=>t.stop());else if(item instanceof AudioContext)item.close();else if(item instanceof OscillatorNode)item.stop()}offerResources=[];video.srcObject=null;video.muted=false;home.classList.remove('is-projecting');session.classList.add('hidden');document.body.classList.remove('in-session','host-mode','viewer-mode');$('shareInfo').classList.add('hidden');mode=''}
-$('hostButton').addEventListener('click',startHost);
+$('hostButton').addEventListener('click',()=>{if(mode==='viewer')stopSession();startHost()});
 $('sessionShareButton').addEventListener('click',()=>{stopSession();startHost()});
 $('recordButton').addEventListener('click',startRecording);
 $('sessionRecordButton').addEventListener('click',startRecording);

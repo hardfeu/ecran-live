@@ -54,6 +54,8 @@ body.recording-active .home-controls{display:none}
 .projection-video{display:none;position:absolute;left:33.7%;top:14.5%;width:32.6%;height:24.8%;z-index:2;border:0;background:#050505;object-fit:contain;box-shadow:0 0 16px rgba(0,0,0,.8)}
 .room-scene.is-projecting .projection-video{display:block}
 body.in-session .home-controls{display:none}
+/* Keep personal share and recording actions available to viewers too. */
+.viewer-mode:not(.recording-active) .home-controls{display:grid}
 @media(max-width:720px){.home-controls{grid-template-columns:1fr;gap:9px;margin-bottom:13px}.share-button,.join-control{min-height:60px;padding:10px 13px}.join-control{grid-template-columns:1fr auto;align-items:center;gap:10px}.join-control label{font-size:7px}.join-entry{min-width:0}.join-entry input{padding:8px}.room-scene{height:clamp(330px,94vw,430px);aspect-ratio:auto}.projection-video{left:20.5%;top:14.5%;width:59%;height:25%}}
 
 /* A palette inspired by the red-and-blue theatre backdrop. */
