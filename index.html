@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#070a10">
   <meta name="description" content="CinéLive — partage ton écran avec le son dans ta salle de cinéma privée.">
   <title>CinéLive — votre salle privée</title>
-  <link rel="stylesheet" href="style.css?v=share-own-turn">
+  <link rel="stylesheet" href="style.css?v=independent-sessions">
 </head>
 <body>
   <main class="shell">
@@ -20,8 +20,8 @@
         <h1>Installez-vous.<br><em>La séance commence.</em></h1>
       </div>
       <div class="home-controls">
-        <button id="hostButton" class="share-button"><span class="tv-play">▶</span><span class="share-copy">PARTAGER MON ÉCRAN<small>Choisis « Écran entier » et active le son</small></span></button>
-        <button id="recordButton" class="share-button record-button"><span class="record-dot"></span><span class="share-copy">ENREGISTRER MON ÉCRAN<small>Créer une vidéo sur cet appareil, sans streaming</small></span></button>
+        <button id="hostButton" class="share-button"><span class="tv-play">▶</span><span class="share-copy">CRÉER MA SALLE<small>Partage ton écran et invite qui tu veux</small></span></button>
+        <button id="recordButton" class="share-button record-button"><span class="record-dot"></span><span class="share-copy">ENREGISTRER MON ÉCRAN<small>Vidéo locale, sans salle ni diffusion</small></span></button>
         <form id="watchForm" class="join-control">
           <label for="roomInput">REJOINDRE AVEC UN CODE</label>
           <div class="join-entry"><input id="roomInput" placeholder="CODE DE LA SALLE" maxlength="8" autocomplete="off" aria-label="Code de salle"><button aria-label="Rejoindre la séance">→</button></div>
@@ -47,6 +47,6 @@
     <footer><span>© CinéLive</span><span>FAIT POUR VOS SOIRÉES À DEUX</span><span>Brave · Chrome · Edge</span></footer>
   </main>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="app.js?v=share-own-turn"></script>
+  <script src="app.js?v=independent-sessions"></script>
 </body>
 </html>
