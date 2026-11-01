@@ -27,6 +27,10 @@
 .record-indicator.recording{background:#ff465f;box-shadow:0 0 12px rgba(255,70,95,.7);animation:record-pulse 1.2s infinite}
 .record-hint{flex:1 1 100%;margin:0;color:#b5c0d0;font-size:10px;line-height:1.5}
 .record-actions{display:flex;gap:8px;margin-left:auto}
+.session-record-button{display:none;align-items:center;gap:9px;margin:4px 0 0;padding:10px 13px;border:1px solid rgba(237,52,74,.42);border-radius:8px;background:rgba(237,52,74,.11);color:#ffe5e8;font:600 10px var(--sans);cursor:pointer}
+.session-record-button:hover{border-color:#ed344a;background:rgba(237,52,74,.2)}
+.session-record-button .record-dot{width:9px;height:9px}
+.host-mode #sessionRecordButton{display:inline-flex}
 .stop-record,.download-record{border:1px solid rgba(237,52,74,.48);border-radius:7px;padding:8px 11px;background:rgba(237,52,74,.13);color:#ffe5e8;font:600 10px var(--sans);text-decoration:none;cursor:pointer}
 .download-record{border-color:rgba(121,200,255,.44);background:rgba(37,97,142,.18);color:#dff2ff}
 .stop-record:disabled{opacity:.6;cursor:wait}
