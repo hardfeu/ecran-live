@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#070a10">
   <meta name="description" content="CinéLive — partage ton écran avec le son dans ta salle de cinéma privée.">
   <title>CinéLive — votre salle privée</title>
-  <link rel="stylesheet" href="style.css?v=independent-sessions-3">
+  <link rel="stylesheet" href="style.css?v=mic-recording-smoother-stream">
 </head>
 <body>
   <main class="shell">
@@ -27,9 +27,10 @@
           <div class="join-entry"><input id="roomInput" placeholder="CODE DE LA SALLE" maxlength="8" autocomplete="off" aria-label="Code de salle"><button aria-label="Rejoindre la séance">→</button></div>
         </form>
       </div>
+      <label id="micOption" class="mic-option"><input id="recordMic" type="checkbox" checked><span><strong>Inclure ma voix</strong><small>Micro utilisé uniquement pour l’enregistrement local.</small></span></label>
       <div id="recordPanel" class="record-panel hidden" aria-live="polite">
         <div class="record-status"><span id="recordIndicator" class="record-indicator"></span><span id="recordStatus">Enregistrement prêt</span><strong id="recordTimer">00:00</strong></div>
-        <p id="recordHint" class="record-hint">L’enregistrement reste sur ton appareil. Choisis « Écran entier » et active le partage audio si tu veux le son.</p>
+        <p id="recordHint" class="record-hint">L’enregistrement reste sur ton appareil. Choisis « Écran entier », active le son système et autorise le micro si tu veux ajouter ta voix.</p>
         <div class="record-actions"><button id="stopRecordButton" class="stop-record hidden">Arrêter l’enregistrement</button><a id="downloadRecordButton" class="download-record hidden" href="#" download>Télécharger la vidéo</a></div>
       </div>
       <div id="home" class="room-scene">
@@ -47,6 +48,6 @@
     <footer><span>© CinéLive</span><span>FAIT POUR VOS SOIRÉES À DEUX</span><span>Brave · Chrome · Edge</span></footer>
   </main>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="app.js?v=independent-sessions-3"></script>
+  <script src="app.js?v=mic-recording-smoother-stream"></script>
 </body>
 </html>

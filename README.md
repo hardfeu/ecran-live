@@ -13,9 +13,9 @@ Une personne qui a rejoint une salle peut aussi cliquer sur **Partager mon écra
 
 ## Enregistrer une vidéo sans la diffuser
 
-Clique **Enregistrer mon écran**, choisis **Écran entier** dans le sélecteur, puis active l'audio système si tu veux enregistrer le son. Si une séance de partage est déjà lancée depuis cet appareil, le bouton **Enregistrer cette capture sur mon appareil** enregistre le même écran et son audio sans lancer une seconde capture. Clique **Arrêter l'enregistrement** et télécharge le fichier vidéo créé dans le navigateur. La vidéo reste locale sur ton appareil et n'est pas envoyée au site. Garde la page ouverte jusqu'au téléchargement.
+Clique **Enregistrer mon écran**, choisis **Écran entier** dans le sélecteur, puis active l'audio système si tu veux enregistrer le son du PC. L'option **Inclure ma voix** est activée par défaut; autorise le micro quand le navigateur le demande. Décoche-la pour ne pas ajouter ta voix. Le micro est utilisé uniquement dans l'enregistrement local, jamais dans le partage en direct. Si une séance de partage est déjà lancée depuis cet appareil, le bouton **Enregistrer cette capture sur mon appareil** enregistre le même écran et son audio sans lancer une seconde capture. Clique **Arrêter l'enregistrement** et télécharge le fichier vidéo créé dans le navigateur. La vidéo reste locale sur ton appareil et n'est pas envoyée au site. Garde la page ouverte jusqu'au téléchargement.
 
-Le partage envoie l'écran choisi et l'audio système autorisé par le navigateur. Le micro n'est pas demandé. Certains navigateurs ne proposent pas l'audio système selon le type d'écran ou de contenu sélectionné.
+Le partage en direct envoie l'écran choisi et l'audio système autorisé par le navigateur. Le micro n'est jamais ajouté au flux en direct. Certains navigateurs ne proposent pas l'audio système selon le type d'écran ou de contenu sélectionné.
 
 ## Compatibilité et réseau
 

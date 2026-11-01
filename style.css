@@ -60,6 +60,14 @@ body.in-session .home-controls{display:none}
 
 /* A palette inspired by the red-and-blue theatre backdrop. */
 :root{--bg:#070a10;--panel:#111823;--muted:#9aa8bb;--white:#f1f4fa;--gold:#ed344a;--gold-bright:#ffdfe4;--wine:#651c2a;--line:rgba(142,169,207,.2)}
+
+/* Optional microphone capture is local to the recording and never added to the live stream. */
+.mic-option{display:flex;align-items:center;gap:10px;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(237,52,74,.28);border-radius:9px;background:linear-gradient(110deg,rgba(37,19,29,.76),rgba(14,15,24,.76));color:#f1e8ee;cursor:pointer}
+.mic-option input{width:16px;height:16px;accent-color:#ed344a;flex:none}
+.mic-option span{display:grid;gap:3px}
+.mic-option strong{font-size:11px;font-weight:600}
+.mic-option small{color:#b5c0d0;font:10px var(--sans)}
+body.recording-active #micOption{display:none}
 body{background:radial-gradient(ellipse at 50% 62%,rgba(23,65,111,.22),transparent 50%),radial-gradient(ellipse at 12% 34%,rgba(171,26,44,.17),transparent 40%),linear-gradient(145deg,#070a10,#0d1420 58%,#070a10)}
 body:before{background-image:radial-gradient(rgba(169,198,238,.22) .55px,transparent .65px)}
 .secure{color:#c0cede}

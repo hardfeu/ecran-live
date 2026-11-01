@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id);
 const home=$('home'),session=$('session'),video=$('video'),status=$('status');
 let peer=null,localStream=null,call=null,mode='',offerResources=[],statsTimer=null,lastVideoStats=null;
-let recorder=null,recordStream=null,recordChunks=[],recordTimer=null,recordStartedAt=0,recordUrl=null,recordingOwnsStream=false,recordingPreviewAttached=false;
+let recorder=null,recordStream=null,recordingStream=null,microphoneStream=null,recordAudioContext=null,recordAudioNodes=[],recordChunks=[],recordTimer=null,recordStartedAt=0,recordUrl=null,recordingOwnsStream=false,recordingPreviewAttached=false;
 function setStatus(text,live=false){status.textContent='';const dot=document.createElement('i');status.append(dot,document.createTextNode(' '+text));status.classList.toggle('live',live)}
 function showSession(){document.body.classList.add('in-session');session.classList.remove('hidden')}
 function makeRoom(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(36).padStart(2,'0')).join('').slice(0,8).toUpperCase()}
@@ -24,7 +24,7 @@ async function startHost(){
     peer.on('error',err=>{setStatus('Erreur de connexion');$('hint').textContent='Erreur : '+err.type+'. Essaie de recharger la page et de relancer le partage.'});
     if(!localStream.getAudioTracks().length)$('hint').textContent='L’écran est partagé, mais le navigateur n’a pas fourni de piste audio. Arrête et réessaie en activant le partage audio dans la fenêtre de sélection.';
     localStream.getVideoTracks()[0].addEventListener('ended',stopSession);
-    $('copyButton').onclick=async()=>{const url=new URL(location.origin+location.pathname);url.searchParams.set('room',room);url.searchParams.set('v','independent-sessions-3');try{await navigator.clipboard.writeText(url.href);$('copyButton').textContent='Lien copié ✓';setTimeout(()=>$('copyButton').textContent='Copier le lien',1800)}catch{$('hint').textContent='Ton code est '+room+'. Envoie-lui ce lien : '+url.href}};
+    $('copyButton').onclick=async()=>{const url=new URL(location.origin+location.pathname);url.searchParams.set('room',room);url.searchParams.set('v','mic-recording-smoother-stream');try{await navigator.clipboard.writeText(url.href);$('copyButton').textContent='Lien copié ✓';setTimeout(()=>$('copyButton').textContent='Copier le lien',1800)}catch{$('hint').textContent='Ton code est '+room+'. Envoie-lui ce lien : '+url.href}};
   }catch(e){setStatus('Partage non démarré');$('hint').textContent=e.name==='NotAllowedError'?'Autorisation refusée ou partage annulé.':'Impossible de capturer l’écran : '+e.message;document.body.classList.remove('in-session','host-mode');session.classList.add('hidden');mode=''}
 }
 function formatRecordTime(milliseconds){const seconds=Math.floor(milliseconds/1000);return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`}
@@ -36,15 +36,41 @@ function stopRecording(){
 async function startRecording(){
   if(recorder)return;
   $('recordButton').disabled=true;
-  $('recordHint').textContent='Choisis « Écran entier » dans la fenêtre du navigateur. L’enregistrement ne sera pas transmis en ligne.';
+  $('recordHint').textContent='Choisis « Écran entier ». Si « Inclure ma voix » est coché, autorise aussi l’accès au micro. L’enregistrement ne sera pas transmis en ligne.';
   try{
     const recordingBroadcast=mode==='host'&&localStream;
     recordingOwnsStream=!recordingBroadcast;
     recordStream=recordingBroadcast?localStream:await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include'});
+    const videoTrack=recordStream.getVideoTracks()[0];
+    if(!videoTrack)throw new Error('La capture ne contient pas de piste vidéo.');
+    const systemAudioTracks=recordStream.getAudioTracks();
+    let microphoneWarning='';
+    if($('recordMic').checked){
+      try{
+        microphoneStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:false});
+        if(!microphoneStream.getAudioTracks().length){microphoneStream.getTracks().forEach(track=>track.stop());microphoneStream=null;microphoneWarning='Aucun micro disponible : la vidéo continue sans voix.';}
+      }catch(error){
+        console.warn('Le microphone n’a pas pu être ajouté à l’enregistrement',error);
+        microphoneWarning=error.name==='NotAllowedError'?'Accès au micro refusé : la vidéo continue sans voix.':'Micro indisponible : la vidéo continue sans voix.';
+      }
+    }
+    const microphoneTracks=microphoneStream?.getAudioTracks()||[];
+    const audioTracks=[...systemAudioTracks,...microphoneTracks];
+    if(audioTracks.length){
+      recordAudioContext=new AudioContext();
+      await recordAudioContext.resume();
+      const destination=recordAudioContext.createMediaStreamDestination();
+      for(const track of audioTracks){
+        const source=recordAudioContext.createMediaStreamSource(new MediaStream([track]));
+        source.connect(destination);
+        recordAudioNodes.push(source);
+      }
+      recordingStream=new MediaStream([videoTrack,destination.stream.getAudioTracks()[0]]);
+    }else recordingStream=new MediaStream([videoTrack]);
     recordChunks=[];
     const mimeTypes=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'];
     const mimeType=mimeTypes.find(type=>MediaRecorder.isTypeSupported(type));
-    recorder=mimeType?new MediaRecorder(recordStream,{mimeType}):new MediaRecorder(recordStream);
+    recorder=mimeType?new MediaRecorder(recordingStream,{mimeType}):new MediaRecorder(recordingStream);
     $('recordPanel').classList.remove('hidden');
     document.body.classList.add('recording-active');
     $('recordStatus').textContent='Enregistrement en cours';
@@ -55,8 +81,8 @@ async function startRecording(){
     $('downloadRecordButton').classList.add('hidden');
     $('downloadRecordButton').removeAttribute('href');
     if(recordUrl){URL.revokeObjectURL(recordUrl);recordUrl=null}
-    if(!recordStream.getAudioTracks().length)$('recordHint').textContent='Enregistrement vidéo démarré sans piste audio. Ton navigateur n’a pas fourni le son système pour cette capture.';
-    else $('recordHint').textContent='La vidéo est enregistrée localement et ne part pas sur Internet. Garde cette page ouverte jusqu’à l’arrêt et au téléchargement.';
+    const audioDescription=[systemAudioTracks.length?'son du système':'',microphoneTracks.length?'micro':''].filter(Boolean).join(' + ');
+    $('recordHint').textContent=microphoneWarning?`${microphoneWarning}${systemAudioTracks.length?' Le son système reste enregistré.':''}`:audioDescription?`Son enregistré : ${audioDescription}. La vidéo reste locale. Garde cette page ouverte jusqu’au téléchargement.`:'Aucun son capturé. Autorise le micro ou active l’audio système dans le sélecteur.';
     recordStartedAt=Date.now();
     recorder.ondataavailable=event=>{if(event.data&&event.data.size)recordChunks.push(event.data)};
     recorder.onerror=event=>{$('recordHint').textContent='Erreur pendant l’enregistrement : '+(event.error?.message||'le navigateur a interrompu la capture.');stopRecording()};
@@ -69,6 +95,7 @@ async function startRecording(){
   }catch(error){
     clearInterval(recordTimer);recordTimer=null;
     if(recordingOwnsStream&&recordStream)recordStream.getTracks().forEach(track=>track.stop());
+    cleanupRecordingAudio();
     recordStream=null;recorder=null;
     if(recordingPreviewAttached){video.srcObject=null;home.classList.remove('is-projecting');}
     recordingOwnsStream=false;recordingPreviewAttached=false;
@@ -76,9 +103,19 @@ async function startRecording(){
     $('recordHint').textContent=error.name==='NotAllowedError'?'Autorisation refusée ou sélection annulée.':'Impossible de démarrer l’enregistrement : '+error.message;
   }finally{$('recordButton').disabled=false}
 }
+function cleanupRecordingAudio(){
+  for(const track of recordingStream?.getAudioTracks()||[])track.stop();
+  recordingStream=null;
+  for(const track of microphoneStream?.getTracks()||[])track.stop();
+  microphoneStream=null;
+  recordAudioNodes=[];
+  if(recordAudioContext&&recordAudioContext.state!=='closed')recordAudioContext.close().catch(()=>{});
+  recordAudioContext=null;
+}
 function finishRecording(){
   clearInterval(recordTimer);recordTimer=null;
   if(recordingOwnsStream&&recordStream)recordStream.getTracks().forEach(track=>track.stop());
+  cleanupRecordingAudio();
   recordStream=null;
   if(recordingPreviewAttached){video.srcObject=null;home.classList.remove('is-projecting');}
   recordingOwnsStream=false;recordingPreviewAttached=false;
@@ -137,6 +174,7 @@ async function tuneVideoSender(mediaCall){
         if(parameters.encodings?.length){
           parameters.encodings[0].maxBitrate=100_000_000;
           parameters.encodings[0].maxFramerate=60;
+          if('priority' in parameters.encodings[0])parameters.encodings[0].priority='high';
           parameters.degradationPreference='maintain-framerate';
           await sender.setParameters(parameters);
         }
