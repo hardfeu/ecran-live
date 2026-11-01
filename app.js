@@ -1,11 +1,12 @@
 const $=id=>document.getElementById(id);
 const home=$('home'),session=$('session'),video=$('video'),status=$('status');
 let peer=null,localStream=null,call=null,mode='',offerResources=[],statsTimer=null,lastVideoStats=null;
+let recorder=null,recordStream=null,recordChunks=[],recordTimer=null,recordStartedAt=0,recordUrl=null;
 function setStatus(text,live=false){status.textContent='';const dot=document.createElement('i');status.append(dot,document.createTextNode(' '+text));status.classList.toggle('live',live)}
 function showSession(){document.body.classList.add('in-session');session.classList.remove('hidden')}
 function makeRoom(){const bytes=crypto.getRandomValues(new Uint8Array(6));return Array.from(bytes,b=>b.toString(36).padStart(2,'0')).join('').slice(0,8).toUpperCase()}
 async function startHost(){
-  if(!window.Peer){alert('Connexion au service de signalisation impossible. Vérifie ta connexion et recharge la page.');return}
+  if(recorder||!window.Peer){alert(recorder?'Arrête l’enregistrement avant de lancer un partage.':'Connexion au service de signalisation impossible. Vérifie ta connexion et recharge la page.');return}
   mode='host';showSession();$('shareInfo').classList.remove('hidden');$('hint').textContent='Profil haute qualité : jusqu’à 1080p, 60 images/s et un plafond de 100 Mb/s. H.264 est privilégié quand disponible ; le débit réel s’adapte au PC et au réseau. Choisis « Écran entier » et active le partage audio.';setStatus('Préparation du partage…');
   try{
     localStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include'});
@@ -24,6 +25,71 @@ async function startHost(){
     localStream.getVideoTracks()[0].addEventListener('ended',stopSession);
     $('copyButton').onclick=async()=>{const url=new URL(location.href);url.search='?room='+room;try{await navigator.clipboard.writeText(url.href);$('copyButton').textContent='Lien copié ✓';setTimeout(()=>$('copyButton').textContent='Copier le lien',1800)}catch{$('hint').textContent='Ton code est '+room+'. Envoie-lui ce lien : '+url.href}};
   }catch(e){setStatus('Partage non démarré');$('hint').textContent=e.name==='NotAllowedError'?'Autorisation refusée ou partage annulé.':'Impossible de capturer l’écran : '+e.message;document.body.classList.remove('in-session');session.classList.add('hidden')}
+}
+function formatRecordTime(milliseconds){const seconds=Math.floor(milliseconds/1000);return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`}
+function stopRecording(){
+  if(recorder&&recorder.state!=='inactive')recorder.stop();
+  $('stopRecordButton').disabled=true;
+  $('recordStatus').textContent='Finalisation de la vidéo…';
+}
+async function startRecording(){
+  if(peer||mode){$('recordHint').textContent='Quitte d’abord la séance en cours pour lancer un enregistrement local.';return}
+  $('recordButton').disabled=true;
+  $('recordHint').textContent='Choisis « Écran entier » dans la fenêtre du navigateur. L’enregistrement ne sera pas transmis en ligne.';
+  try{
+    recordStream=await navigator.mediaDevices.getDisplayMedia({video:{width:{ideal:1920,max:1920},height:{ideal:1080,max:1080},frameRate:{ideal:60,max:60}},audio:true,systemAudio:'include'});
+    recordChunks=[];
+    const mimeTypes=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'];
+    const mimeType=mimeTypes.find(type=>MediaRecorder.isTypeSupported(type));
+    recorder=mimeType?new MediaRecorder(recordStream,{mimeType}):new MediaRecorder(recordStream);
+    $('recordPanel').classList.remove('hidden');
+    document.body.classList.add('recording-active');
+    $('recordStatus').textContent='Enregistrement en cours';
+    $('recordIndicator').classList.add('recording');
+    $('recordTimer').textContent='00:00';
+    $('stopRecordButton').classList.remove('hidden');
+    $('stopRecordButton').disabled=false;
+    $('downloadRecordButton').classList.add('hidden');
+    $('downloadRecordButton').removeAttribute('href');
+    if(recordUrl){URL.revokeObjectURL(recordUrl);recordUrl=null}
+    if(!recordStream.getAudioTracks().length)$('recordHint').textContent='Enregistrement vidéo démarré sans piste audio. Ton navigateur n’a pas fourni le son système pour cette capture.';
+    else $('recordHint').textContent='La vidéo est enregistrée localement et ne part pas sur Internet. Garde cette page ouverte jusqu’à l’arrêt et au téléchargement.';
+    recordStartedAt=Date.now();
+    recorder.ondataavailable=event=>{if(event.data&&event.data.size)recordChunks.push(event.data)};
+    recorder.onerror=event=>{$('recordHint').textContent='Erreur pendant l’enregistrement : '+(event.error?.message||'le navigateur a interrompu la capture.');stopRecording()};
+    recorder.onstop=finishRecording;
+    recorder.start(1000);
+    video.srcObject=recordStream;video.muted=true;home.classList.add('is-projecting');video.play().catch(()=>{});
+    recordTimer=setInterval(()=>$('recordTimer').textContent=formatRecordTime(Date.now()-recordStartedAt),500);
+    recordStream.getVideoTracks()[0]?.addEventListener('ended',stopRecording,{once:true});
+  }catch(error){
+    clearInterval(recordTimer);recordTimer=null;
+    if(recordStream)recordStream.getTracks().forEach(track=>track.stop());
+    recordStream=null;recorder=null;
+    video.srcObject=null;home.classList.remove('is-projecting');
+    $('recordPanel').classList.add('hidden');document.body.classList.remove('recording-active');
+    $('recordHint').textContent=error.name==='NotAllowedError'?'Autorisation refusée ou sélection annulée.':'Impossible de démarrer l’enregistrement : '+error.message;
+  }finally{$('recordButton').disabled=false}
+}
+function finishRecording(){
+  clearInterval(recordTimer);recordTimer=null;
+  if(recordStream)recordStream.getTracks().forEach(track=>track.stop());
+  recordStream=null;
+  video.srcObject=null;home.classList.remove('is-projecting');
+  $('recordIndicator').classList.remove('recording');
+  $('stopRecordButton').classList.add('hidden');$('stopRecordButton').disabled=false;
+  document.body.classList.remove('recording-active');
+  if(!recordChunks.length){$('recordStatus').textContent='Aucune vidéo créée';$('recordHint').textContent='Le navigateur n’a fourni aucune donnée vidéo. Réessaie avec une fenêtre de capture autorisée.';recorder=null;return}
+  const type=recorder?.mimeType||recordChunks[0].type||'video/webm';
+  const extension=type.includes('mp4')?'mp4':'webm';
+  const blob=new Blob(recordChunks,{type});
+  recordUrl=URL.createObjectURL(blob);
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  const link=$('downloadRecordButton');link.href=recordUrl;link.download=`CineLive-${stamp}.${extension}`;link.classList.remove('hidden');
+  $('recordStatus').textContent='Enregistrement terminé';
+  $('recordTimer').textContent=formatRecordTime(Date.now()-recordStartedAt);
+  $('recordHint').textContent=`Vidéo prête (${(blob.size/1_000_000).toFixed(1)} Mo), stockée temporairement dans cette page. Télécharge-la avant de fermer ou recharger.`;
+  recordChunks=[];recorder=null;
 }
 function startViewer(room){
   room=room.trim().toLowerCase();if(!/^[a-z0-9]{4,8}$/.test(room)){alert('Entre un code de partage valide.');return}
@@ -103,6 +169,8 @@ function startStats(mediaCall,direction){
 function stopStats(){if(statsTimer){clearInterval(statsTimer);statsTimer=null}lastVideoStats=null;$('quality').textContent='';$('quality').classList.remove('low')}
 function stopSession(){stopStats();if(call){call.close();call=null}if(peer){peer.destroy();peer=null}if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null}for(const item of offerResources){if(item instanceof MediaStream)item.getTracks().forEach(t=>t.stop());else if(item instanceof AudioContext)item.close();else if(item instanceof OscillatorNode)item.stop()}offerResources=[];video.srcObject=null;video.muted=false;home.classList.remove('is-projecting');session.classList.add('hidden');document.body.classList.remove('in-session');$('shareInfo').classList.add('hidden');mode=''}
 $('hostButton').addEventListener('click',startHost);
+$('recordButton').addEventListener('click',startRecording);
+$('stopRecordButton').addEventListener('click',stopRecording);
 $('watchForm').addEventListener('submit',e=>{e.preventDefault();startViewer($('roomInput').value)});
 $('stopButton').addEventListener('click',stopSession);
 const initialRoom=new URLSearchParams(location.search).get('room');if(initialRoom){$('roomInput').value=initialRoom;startViewer(initialRoom)}

@@ -9,6 +9,10 @@ CinéLive permet de partager tout l'écran et son audio dans une salle de ciném
 3. Copie le lien de la salle et envoie-le au spectateur. Il peut également saisir le code sur le site.
 4. Pour arrêter, clique sur **Quitter la salle** ou arrête le partage depuis le navigateur.
 
+## Enregistrer une vidéo sans la diffuser
+
+Clique **Enregistrer mon écran**, choisis **Écran entier** dans le sélecteur, puis active l'audio système si tu veux enregistrer le son. Clique **Arrêter l'enregistrement** et télécharge le fichier vidéo créé dans le navigateur. La vidéo reste locale sur ton appareil et n'est pas envoyée au site. Garde la page ouverte jusqu'au téléchargement.
+
 Le partage envoie l'écran choisi et l'audio système autorisé par le navigateur. Le micro n'est pas demandé. Certains navigateurs ne proposent pas l'audio système selon le type d'écran ou de contenu sélectionné.
 
 ## Compatibilité et réseau

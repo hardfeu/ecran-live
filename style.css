@@ -8,7 +8,7 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
 
 /* Actions sit above the cinema photo; the live stream is projected into the screen. */
-.home-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:0 0 18px}
+.home-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:0 0 18px}
 .share-button,.join-control{min-height:72px;border:1px solid rgba(232,197,141,.34);border-radius:11px;background:linear-gradient(120deg,rgba(42,34,31,.96),rgba(25,21,20,.96));box-shadow:0 10px 28px rgba(0,0,0,.24);padding:13px 17px}
 .share-button{display:flex;align-items:center;justify-content:center;gap:11px;color:#30251e;background:linear-gradient(135deg,#f1d9ac,#d5ad72);font:700 11px var(--mono);letter-spacing:.55px;cursor:pointer}
 .download-button{text-decoration:none}
@@ -16,6 +16,22 @@
 .share-copy small{font:500 9px var(--sans);letter-spacing:0;opacity:.82}
 .share-button:hover{filter:brightness(1.08)}
 .share-button:disabled{opacity:.65;cursor:wait}
+.record-button{border-color:rgba(237,52,74,.5);background:linear-gradient(130deg,#211522,#15111a);color:#f3dce0}
+.record-button:hover{border-color:#ed344a;background:linear-gradient(130deg,#321823,#1b1119)}
+.record-button .share-copy small{color:#c4afbd}
+.record-dot,.record-indicator{display:block;width:12px;height:12px;flex:none;border-radius:50%;background:#ed344a;box-shadow:0 0 15px rgba(237,52,74,.5)}
+.record-panel{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:-5px 0 18px;padding:12px 15px;border:1px solid rgba(237,52,74,.35);border-radius:10px;background:linear-gradient(110deg,rgba(37,19,29,.96),rgba(14,15,24,.96))}
+.record-status{display:flex;align-items:center;gap:9px;color:#f1e8ee;font-size:12px}
+.record-status strong{margin-left:5px;color:#ffdfe4;font:600 12px var(--mono);font-variant-numeric:tabular-nums}
+.record-indicator{width:9px;height:9px;background:#68788d;box-shadow:none}
+.record-indicator.recording{background:#ff465f;box-shadow:0 0 12px rgba(255,70,95,.7);animation:record-pulse 1.2s infinite}
+.record-hint{flex:1 1 100%;margin:0;color:#b5c0d0;font-size:10px;line-height:1.5}
+.record-actions{display:flex;gap:8px;margin-left:auto}
+.stop-record,.download-record{border:1px solid rgba(237,52,74,.48);border-radius:7px;padding:8px 11px;background:rgba(237,52,74,.13);color:#ffe5e8;font:600 10px var(--sans);text-decoration:none;cursor:pointer}
+.download-record{border-color:rgba(121,200,255,.44);background:rgba(37,97,142,.18);color:#dff2ff}
+.stop-record:disabled{opacity:.6;cursor:wait}
+@keyframes record-pulse{50%{opacity:.38}}
+body.recording-active .home-controls{display:none}
 .share-button .tv-play{height:27px;width:27px;display:grid;place-items:center;border-radius:50%;background:rgba(72,48,35,.13);font-size:11px}
 .join-control{display:grid;align-content:center;gap:8px}
 .join-control label{color:#bca99b;font:8px var(--mono);letter-spacing:1.1px}
